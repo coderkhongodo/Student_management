@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="text-center">
+    <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+        <h1 class="display-4"><i class="fas fa-graduation-cap"></i> Hệ thống quản lý sinh viên</h1>
+        <p class="lead">Nền tảng quản lý toàn diện cho việc tổ chức bài kiểm tra và theo dõi kết quả học tập</p>
+        @if (!User.Identity!.IsAuthenticated)
+        {
+            <hr class="my-4">
+            <p>Đăng nhập để truy cập vào hệ thống</p>
+            <a class="btn btn-light btn-lg" asp-controller="Account" asp-action="Login" role="button">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+        }
+    </div>
+
+    @if (!User.Identity!.IsAuthenticated)
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-users-cog text-danger"></i> Quản trị viên</h5>
+                        <p class="card-text">Quản lý toàn bộ hệ thống, người dùng và thiết lập lương cho giảng viên.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-chalkboard-teacher text-success"></i> Giảng viên</h5>
+                        <p class="card-text">Tạo bài kiểm tra, lên lịch thi, chấm điểm và quản lý kết quả học tập.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-user-graduate text-primary"></i> Học sinh</h5>
+                        <p class="card-text">Tham gia bài kiểm tra theo lịch, nộp bài và xem kết quả điểm số.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

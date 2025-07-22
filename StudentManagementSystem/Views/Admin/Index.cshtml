@@ -1,0 +1,188 @@
+@model StudentManagementSystem.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Bảng điều khiển Admin";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt"></i> Bảng điều khiển Admin</h2>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalStudents</h4>
+                        <p class="mb-0">Học sinh</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-graduate fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Students")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalTeachers</h4>
+                        <p class="mb-0">Giảng viên</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Teachers")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalSubjects</h4>
+                        <p class="mb-0">Môn học</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-book fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Subjects")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalClasses</h4>
+                        <p class="mb-0">Lớp học</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chalkboard fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Classes")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalExams</h4>
+                        <p class="mb-0">Bài kiểm tra</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-file-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Exams")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalSubmissions</h4>
+                        <p class="mb-0">Bài nộp</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-paper-plane fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Grades")" class="text-white text-decoration-none">
+                    Xem điểm số <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-users"></i> Quản lý người dùng</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="@Url.Action("CreateSubject")" class="btn btn-warning">
+                        <i class="fas fa-plus"></i> Thêm môn học mới
+                    </a>
+                    <a href="@Url.Action("CreateClass")" class="btn btn-secondary">
+                        <i class="fas fa-plus"></i> Thêm lớp học mới
+                    </a>
+                    <a href="@Url.Action("CreateTeacher")" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Thêm giảng viên mới
+                    </a>
+                    <a href="@Url.Action("CreateStudent")" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Thêm học sinh mới
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Báo cáo</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="@Url.Action("Subjects")" class="btn btn-warning">
+                        <i class="fas fa-book"></i> Quản lý môn học
+                    </a>
+                    <a href="@Url.Action("Classes")" class="btn btn-secondary">
+                        <i class="fas fa-chalkboard"></i> Quản lý lớp học
+                    </a>
+                    <a href="@Url.Action("Exams")" class="btn btn-info">
+                        <i class="fas fa-file-alt"></i> Xem tất cả bài kiểm tra
+                    </a>
+                    <a href="@Url.Action("StudentGrades")" class="btn btn-danger">
+                        <i class="fas fa-star"></i> Quản lý điểm số
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

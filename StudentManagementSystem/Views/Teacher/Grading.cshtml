@@ -1,0 +1,276 @@
+@model IEnumerable<StudentManagementSystem.Models.Submission>
+@{
+    ViewData["Title"] = "Chấm điểm bài thi";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-star"></i> Chấm điểm bài thi</h2>
+    <div>
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+            <i class="fas fa-filter"></i> Lọc
+        </button>
+        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#autoGradingModal">
+            <i class="fas fa-robot"></i> Tự động chấm điểm
+        </button>
+        <a href="@Url.Action("ExportGrades")" class="btn btn-outline-success">
+            <i class="fas fa-file-excel"></i> Xuất Excel
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Học sinh</th>
+                            <th>Bài kiểm tra</th>
+                            <th>Thời gian nộp</th>
+                            <th>Câu trả lời</th>
+                            <th>File đính kèm</th>
+                            <th>Điểm số</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var submission in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@submission.Student.FullName</strong><br>
+                                    <small class="text-muted">@submission.Student.StudentId</small>
+                                </td>
+                                <td>
+                                    <strong>@submission.ExamSchedule.Exam.Title</strong><br>
+                                    <small class="text-muted">
+                                        @submission.ExamSchedule.ClassName - 
+                                        @submission.ExamSchedule.StartTime.ToString("dd/MM/yyyy HH:mm")
+                                    </small>
+                                </td>
+                                <td>
+                                    @submission.SubmittedAt.ToString("dd/MM/yyyy HH:mm")
+                                    @{
+                                        var timeDiff = submission.SubmittedAt - submission.ExamSchedule.StartTime;
+                                        var isLate = submission.SubmittedAt > submission.ExamSchedule.EndTime;
+                                    }
+                                    @if (isLate)
+                                    {
+                                        <br><span class="badge bg-warning">Nộp muộn</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(submission.AnswerText))
+                                    {
+                                        <span title="@submission.AnswerText">
+                                            @(submission.AnswerText.Length > 50 ? submission.AnswerText.Substring(0, 50) + "..." : submission.AnswerText)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không có văn bản</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(submission.AnswerFilePath))
+                                    {
+                                        <a href="@Url.Action("DownloadSubmission", new { id = submission.Id })" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-download"></i> Tải file
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không có file</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (submission.Grade != null)
+                                    {
+                                        var badgeClass = submission.Grade.Score >= 8.0m ? "bg-success" : 
+                                                        submission.Grade.Score >= 6.5m ? "bg-primary" : 
+                                                        submission.Grade.Score >= 5.0m ? "bg-warning" : "bg-danger";
+                                        <span class="badge @badgeClass fs-6">@submission.Grade.Score.ToString("F1")/10</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Chưa chấm</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (submission.Grade != null)
+                                    {
+                                        <span class="badge bg-success">Đã chấm</span><br>
+                                        <small class="text-muted">@submission.Grade.GradedAt.ToString("dd/MM/yyyy")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Chờ chấm</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("GradeSubmission", new { id = submission.Id })" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-star"></i> 
+                                            @(submission.Grade != null ? "Sửa điểm" : "Chấm điểm")
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#viewModal-@submission.Id">
+                                            <i class="fas fa-eye"></i> Xem
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có bài nộp nào</h5>
+                <p class="text-muted">Học sinh chưa nộp bài kiểm tra hoặc chưa có lịch thi nào diễn ra</p>
+                <a href="@Url.Action("Schedules")" class="btn btn-primary">
+                    <i class="fas fa-calendar-alt"></i> Xem lịch thi
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count()</h4>
+                        <p class="mb-0">Tổng bài nộp</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-file-upload fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(s => s.Grade != null)</h4>
+                        <p class="mb-0">Đã chấm điểm</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(s => s.Grade == null)</h4>
+                        <p class="mb-0">Chờ chấm điểm</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        @{
+                            var gradedSubmissions = Model.Where(s => s.Grade != null);
+                            var averageScore = gradedSubmissions.Any() ? gradedSubmissions.Average(s => s.Grade.Score) : 0;
+                        }
+                        <h4>@averageScore.ToString("F1")</h4>
+                        <p class="mb-0">Điểm trung bình</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto Grading Modal -->
+<div class="modal fade" id="autoGradingModal" tabindex="-1" aria-labelledby="autoGradingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="autoGradingModalLabel">
+                    <i class="fas fa-robot"></i> Tự động chấm điểm
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Chú ý:</strong> Tính năng này sẽ tự động chấm điểm 0 cho tất cả học sinh trong lớp
+                    không tham gia kiểm tra sau khi kỳ thi đã kết thúc.
+                </div>
+
+                @{
+                    var expiredExams = Model.Where(s => s.ExamSchedule.EndTime < DateTime.Now && !s.ExamSchedule.AutoGradingProcessed)
+                        .GroupBy(s => s.ExamSchedule)
+                        .Select(g => g.Key)
+                        .ToList();
+                }
+
+                @if (expiredExams.Any())
+                {
+                    <p>Các kỳ thi đã hết hạn và chưa được xử lý:</p>
+                    <div class="list-group">
+                        @foreach (var exam in expiredExams)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@exam.Exam.Title</strong><br>
+                                    <small class="text-muted">
+                                        @exam.ClassName - Kết thúc: @exam.EndTime.ToString("dd/MM/yyyy HH:mm")
+                                    </small>
+                                </div>
+                                <form asp-action="ProcessExpiredExam" method="post" style="display: inline;">
+                                    <input type="hidden" name="examScheduleId" value="@exam.Id" />
+                                    <button type="submit" class="btn btn-warning btn-sm"
+                                            onclick="return confirm('Bạn có chắc chắn muốn tự động chấm điểm 0 cho học sinh không tham gia kiểm tra này?')">
+                                        <i class="fas fa-robot"></i> Xử lý
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Không có kỳ thi nào cần xử lý tự động chấm điểm.
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,204 @@
+@model StudentManagementSystem.ViewModels.TeacherDashboardViewModel
+@{
+    ViewData["Title"] = "Bảng điều khiển Giảng viên";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-chalkboard-teacher"></i> Bảng điều khiển Giảng viên</h2>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@ViewBag.TotalClasses</h4>
+                        <p class="mb-0">Lớp học</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-school fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("MyClasses")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@ViewBag.TotalStudents</h4>
+                        <p class="mb-0">Sinh viên</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("MyClasses")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@ViewBag.TotalSessions</h4>
+                        <p class="mb-0">Buổi học</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("MyClasses")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalExams</h4>
+                        <p class="mb-0">Bài kiểm tra</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-file-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Exams")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3"></div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalSchedules</h4>
+                        <p class="mb-0">Lịch thi</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Schedules")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.TotalSubmissions</h4>
+                        <p class="mb-0">Bài nộp</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-paper-plane fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Grading")" class="text-white text-decoration-none">
+                    Xem chi tiết <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.PendingGrades</h4>
+                        <p class="mb-0">Chờ chấm điểm</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Grading")" class="text-white text-decoration-none">
+                    Chấm điểm ngay <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-plus"></i> Tạo mới</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="@Url.Action("MyClasses")" class="btn btn-primary">
+                        <i class="fas fa-school"></i> Quản lý lớp học
+                    </a>
+                    <a href="@Url.Action("CreateExam")" class="btn btn-info">
+                        <i class="fas fa-file-plus"></i> Tạo bài kiểm tra mới
+                    </a>
+                    <a href="@Url.Action("CreateSchedule")" class="btn btn-success">
+                        <i class="fas fa-calendar-plus"></i> Tạo lịch thi mới
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-tasks"></i> Công việc</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="@Url.Action("Grading")" class="btn btn-warning">
+                        <i class="fas fa-star"></i> Chấm điểm bài thi
+                    </a>
+                    <a href="@Url.Action("Schedules")" class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i> Quản lý lịch thi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,150 @@
+@model StudentManagementSystem.ViewModels.AssignStudentsViewModel
+@{
+    ViewData["Title"] = "Phân công sinh viên";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4><i class="fas fa-users"></i> Phân công sinh viên - @Model.ClassName</h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <div class="row">
+                    <!-- Sinh viên hiện tại -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-user-check"></i> Sinh viên trong lớp (@Model.CurrentStudents.Count)</h5>
+                            </div>
+                            <div class="card-body">
+                                @if (Model.CurrentStudents.Any())
+                                {
+                                    <div class="list-group">
+                                        @foreach (var student in Model.CurrentStudents)
+                                        {
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>@student.Student.FullName</strong><br>
+                                                    <small class="text-muted">@student.Student.StudentId - @student.Student.Email</small>
+                                                </div>
+                                                <form asp-action="RemoveStudentFromClass" method="post" style="display: inline;">
+                                                    <input type="hidden" name="classId" value="@Model.ClassId" />
+                                                    <input type="hidden" name="studentId" value="@student.StudentUserId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                            onclick="return confirm('Bạn có chắc muốn xóa sinh viên này khỏi lớp?')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-user-slash fa-2x mb-2"></i>
+                                        <p>Chưa có sinh viên nào trong lớp</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thêm sinh viên mới -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-user-plus"></i> Thêm sinh viên (@Model.AvailableStudents.Count)</h5>
+                            </div>
+                            <div class="card-body">
+                                @if (Model.AvailableStudents.Any())
+                                {
+                                    <form asp-action="AssignStudents" method="post">
+                                        <input type="hidden" name="classId" value="@Model.ClassId" />
+                                        
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="selectAll">
+                                                <label class="form-check-label" for="selectAll">
+                                                    <strong>Chọn tất cả</strong>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="list-group mb-3" style="max-height: 400px; overflow-y: auto;">
+                                            @for (int i = 0; i < Model.AvailableStudents.Count; i++)
+                                            {
+                                                var student = Model.AvailableStudents[i];
+                                                <div class="list-group-item">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" class="form-check-input student-checkbox" 
+                                                               name="selectedStudentIds" value="@student.Id" id="student-@i">
+                                                        <label class="form-check-label" for="student-@i">
+                                                            <strong>@student.FullName</strong><br>
+                                                            <small class="text-muted">@student.StudentId - @student.Email</small>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                        
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-plus"></i> Thêm sinh viên đã chọn
+                                            </button>
+                                        </div>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-user-check fa-2x mb-2"></i>
+                                        <p>Tất cả sinh viên đã được phân công</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a href="@Url.Action("Classes")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay lại danh sách lớp học
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        // Update select all checkbox when individual checkboxes change
+        document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const allCheckboxes = document.querySelectorAll('.student-checkbox');
+                const checkedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+                const selectAllCheckbox = document.getElementById('selectAll');
+                
+                selectAllCheckbox.checked = allCheckboxes.length === checkedCheckboxes.length;
+                selectAllCheckbox.indeterminate = checkedCheckboxes.length > 0 && checkedCheckboxes.length < allCheckboxes.length;
+            });
+        });
+    </script>
+}

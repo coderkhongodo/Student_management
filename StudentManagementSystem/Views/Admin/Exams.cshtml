@@ -1,0 +1,167 @@
+@model IEnumerable<StudentManagementSystem.Models.Exam>
+@{
+    ViewData["Title"] = "Tất cả bài kiểm tra";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-alt"></i> Tất cả bài kiểm tra</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Tên bài kiểm tra</th>
+                            <th>Mô tả</th>
+                            <th>Thời gian</th>
+                            <th>Loại bài thi</th>
+                            <th>Lịch thi</th>
+                            <th>Người tạo</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var exam in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@exam.Title</strong>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(exam.Description))
+                                    {
+                                        <span>@(exam.Description.Length > 50 ? exam.Description.Substring(0, 50) + "..." : exam.Description)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không có mô tả</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (exam.ExamSchedules.Any())
+                                    {
+                                        <span class="badge bg-info">@exam.ExamSchedules.First().DurationMinutes phút</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa có lịch</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">File bài thi</span>
+                                </td>
+                                <td>
+                                    @if (exam.ExamSchedules.Any())
+                                    {
+                                        <span class="badge bg-success">@exam.ExamSchedules.Count lịch thi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Chưa có lịch</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small>@exam.CreatedBy.FullName</small><br>
+                                    <small class="text-muted">@exam.CreatedBy.EmployeeId</small>
+                                </td>
+                                <td>
+                                    @exam.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td>
+                                    @if (exam.IsActive)
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Không hoạt động</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có bài kiểm tra nào</h5>
+                <p class="text-muted">Các giảng viên chưa tạo bài kiểm tra nào trong hệ thống</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count()</h4>
+                        <p class="mb-0">Tổng bài kiểm tra</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-file-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(e => e.IsActive)</h4>
+                        <p class="mb-0">Đang hoạt động</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Sum(e => e.ExamSchedules.Count)</h4>
+                        <p class="mb-0">Lịch thi</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(e => !string.IsNullOrEmpty(e.FilePath))</h4>
+                        <p class="mb-0">Có file đính kèm</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-question-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,206 @@
+@model StudentManagementSystem.ViewModels.CreateScheduleViewModel
+@{
+    ViewData["Title"] = "Tạo lịch thi mới";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4><i class="fas fa-calendar-plus"></i> Tạo lịch thi mới</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateSchedule" method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="ExamId" class="form-label"></label>
+                        <select asp-for="ExamId" class="form-select">
+                            <option value="">-- Chọn bài kiểm tra --</option>
+                            @foreach (var exam in ViewBag.Exams as IEnumerable<StudentManagementSystem.Models.Exam>)
+                            {
+                                <option value="@exam.Id">@exam.Title</option>
+                            }
+                        </select>
+                        <span asp-validation-for="ExamId" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="ClassId" class="form-label"></label>
+                        <select asp-for="ClassId" class="form-select">
+                            <option value="">-- Chọn lớp học --</option>
+                            @foreach (var classItem in ViewBag.Classes as IEnumerable<StudentManagementSystem.Models.Class>)
+                            {
+                                <option value="@classItem.Id">
+                                    @classItem.ClassName - @classItem.Semester/@classItem.Year
+                                    (@classItem.ClassStudents.Count sinh viên)
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="ClassId" class="text-danger"></span>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Chọn lớp học mà bạn đang giảng dạy
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="StartTime" class="form-label"></label>
+                                <input asp-for="StartTime" class="form-control" type="datetime-local" />
+                                <span asp-validation-for="StartTime" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="EndTime" class="form-label"></label>
+                                <input asp-for="EndTime" class="form-control" type="datetime-local" />
+                                <span asp-validation-for="EndTime" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Thời lượng thi</label>
+                        <div class="input-group">
+                            <input type="number" id="duration" class="form-control" readonly />
+                            <span class="input-group-text">phút</span>
+                        </div>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Thời lượng được tính tự động dựa trên thời gian bắt đầu và kết thúc
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Location" class="form-label"></label>
+                        <input asp-for="Location" class="form-control" placeholder="VD: Phòng A101, Hội trường, Online..." />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Instructions" class="form-label"></label>
+                        <textarea asp-for="Instructions" class="form-control" rows="4" placeholder="Hướng dẫn cho học sinh: cách thức làm bài, quy định, lưu ý..."></textarea>
+                        <span asp-validation-for="Instructions" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-lightbulb"></i> Lưu ý quan trọng:</h6>
+                        <ul class="mb-0">
+                            <li><strong>Thời gian:</strong> Đảm bảo thời gian bắt đầu và kết thúc hợp lý</li>
+                            <li><strong>Lớp học:</strong> Chỉ học sinh thuộc lớp này mới thấy được lịch thi</li>
+                            <li><strong>Địa điểm:</strong> Ghi rõ địa điểm để học sinh không bị nhầm lẫn</li>
+                            <li><strong>Hướng dẫn:</strong> Cung cấp thông tin chi tiết về cách thức làm bài</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Schedules")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Tạo lịch thi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Templates -->
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-magic"></i> Mẫu nhanh</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-primary w-100 mb-2" onclick="setQuickTemplate('midterm')">
+                            <i class="fas fa-clock"></i><br>
+                            Kiểm tra giữa kỳ<br>
+                            <small>90 phút</small>
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-success w-100 mb-2" onclick="setQuickTemplate('final')">
+                            <i class="fas fa-graduation-cap"></i><br>
+                            Thi cuối kỳ<br>
+                            <small>120 phút</small>
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-info w-100 mb-2" onclick="setQuickTemplate('quiz')">
+                            <i class="fas fa-question"></i><br>
+                            Kiểm tra nhanh<br>
+                            <small>45 phút</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startTimeInput = document.querySelector('input[name="StartTime"]');
+            const endTimeInput = document.querySelector('input[name="EndTime"]');
+            const durationInput = document.querySelector('#duration');
+            
+            function calculateDuration() {
+                if (startTimeInput.value && endTimeInput.value) {
+                    const start = new Date(startTimeInput.value);
+                    const end = new Date(endTimeInput.value);
+                    const diffMinutes = (end - start) / (1000 * 60);
+                    
+                    if (diffMinutes > 0) {
+                        durationInput.value = diffMinutes;
+                    } else {
+                        durationInput.value = '';
+                    }
+                }
+            }
+            
+            startTimeInput.addEventListener('change', calculateDuration);
+            endTimeInput.addEventListener('change', calculateDuration);
+        });
+        
+        function setQuickTemplate(type) {
+            const now = new Date();
+            const startTime = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Tomorrow
+            startTime.setHours(8, 0, 0, 0); // 8:00 AM
+            
+            let duration = 90; // Default 90 minutes
+            let instructions = '';
+            
+            switch(type) {
+                case 'midterm':
+                    duration = 90;
+                    instructions = 'Kiểm tra giữa kỳ. Học sinh cần mang theo bút, giấy nháp. Không được sử dụng tài liệu.';
+                    break;
+                case 'final':
+                    duration = 120;
+                    instructions = 'Thi cuối kỳ. Học sinh cần mang theo thẻ sinh viên, bút viết. Được phép sử dụng máy tính cầm tay.';
+                    break;
+                case 'quiz':
+                    duration = 45;
+                    instructions = 'Kiểm tra nhanh. Thời gian ngắn, tập trung vào kiến thức cơ bản.';
+                    break;
+            }
+            
+            const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
+            
+            document.querySelector('input[name="StartTime"]').value = startTime.toISOString().slice(0, 16);
+            document.querySelector('input[name="EndTime"]').value = endTime.toISOString().slice(0, 16);
+            document.querySelector('textarea[name="Instructions"]').value = instructions;
+            document.querySelector('#duration').value = duration;
+        }
+    </script>
+}

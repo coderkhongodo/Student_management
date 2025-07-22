@@ -1,0 +1,333 @@
+@model StudentManagementSystem.ViewModels.StudentScheduleOverviewViewModel
+@{
+    ViewData["Title"] = "Lịch học";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-alt"></i> Lịch học</h2>
+    <div>
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#calendarModal">
+            <i class="fas fa-calendar"></i> Xem lịch
+        </button>
+        <a href="@Url.Action("ExportSchedule")" class="btn btn-outline-success">
+            <i class="fas fa-file-excel"></i> Xuất Excel
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h4>@Model.TotalSchedules</h4>
+                    <p class="mb-0">Tổng buổi học</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-calendar-alt fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h4>@Model.TodayCount</h4>
+                    <p class="mb-0">Hôm nay</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-calendar-day fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h4>@Model.AttendedCount</h4>
+                    <p class="mb-0">Đã tham gia</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-check fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h4>@Model.AttendanceRate.ToString("F1")%</h4>
+                    <p class="mb-0">Tỷ lệ tham gia</p>
+                </div>
+                <div class="align-self-center">
+                    <i class="fas fa-percentage fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Student Info -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Thông tin sinh viên</h5>
+                <p class="mb-1"><strong>Họ tên:</strong> @Model.StudentName</p>
+                <p class="mb-0"><strong>Mã sinh viên:</strong> @Model.StudentId</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Classes -->
+@if (Model.TodaySchedules.Any())
+{
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-white">
+            <h5 class="mb-0"><i class="fas fa-calendar-day"></i> Lịch học hôm nay (@Model.TodaySchedules.Count)</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach (var schedule in Model.TodaySchedules)
+                {
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">@schedule.SessionTitle</h6>
+                                    <span class="badge bg-@schedule.StatusClass">@schedule.Status</span>
+                                </div>
+                                <p class="text-muted mb-2">@schedule.SubjectName - @schedule.ClassName</p>
+                                <p class="mb-2"><i class="fas fa-user"></i> @schedule.TeacherName</p>
+                                <p class="mb-2"><i class="fas fa-clock"></i> @schedule.StartTime.ToString(@"hh\:mm") - @schedule.EndTime.ToString(@"hh\:mm")</p>
+                                <p class="mb-2"><i class="fas fa-map-marker-alt"></i> @schedule.Location</p>
+
+                                @if (schedule.HasAttended)
+                                {
+                                    <span class="text-success"><i class="fas fa-check"></i> @schedule.AttendanceStatus</span>
+                                }
+                                else if (schedule.IsCompleted)
+                                {
+                                    <span class="text-danger"><i class="fas fa-times"></i> Chưa điểm danh</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted"><i class="fas fa-clock"></i> Chờ điểm danh</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Upcoming Classes -->
+@if (Model.UpcomingSchedules.Any())
+{
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-calendar-plus"></i> Lịch học sắp tới (@Model.UpcomingSchedules.Count)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Buổi học</th>
+                            <th>Môn học</th>
+                            <th>Lớp</th>
+                            <th>Giảng viên</th>
+                            <th>Thời gian</th>
+                            <th>Địa điểm</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var schedule in Model.UpcomingSchedules.Take(10))
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@schedule.SessionTitle</strong>
+                                    @if (!string.IsNullOrEmpty(schedule.SessionDescription))
+                                    {
+                                        <br><small class="text-muted">@schedule.SessionDescription</small>
+                                    }
+                                </td>
+                                <td>@schedule.SubjectName</td>
+                                <td>@schedule.ClassName</td>
+                                <td>@schedule.TeacherName</td>
+                                <td>
+                                    <strong>@schedule.SessionDate.ToString("dd/MM/yyyy")</strong><br>
+                                    <small>@schedule.StartTime.ToString(@"hh\:mm") - @schedule.EndTime.ToString(@"hh\:mm")</small>
+                                </td>
+                                <td>@schedule.Location</td>
+                                <td>
+                                    <span class="badge bg-@schedule.StatusClass">@schedule.Status</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-info btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#detailModal"
+                                            data-schedule='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(schedule))'>
+                                        <i class="fas fa-info"></i> Chi tiết
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model.UpcomingSchedules.Count > 10)
+            {
+                <div class="text-center mt-3">
+                    <small class="text-muted">Hiển thị 10 buổi gần nhất. Tổng cộng: @Model.UpcomingSchedules.Count buổi</small>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- Completed Classes -->
+@if (Model.CompletedSchedules.Any())
+{
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0"><i class="fas fa-history"></i> Lịch sử buổi học (@Model.CompletedSchedules.Count)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Buổi học</th>
+                            <th>Môn học</th>
+                            <th>Thời gian</th>
+                            <th>Điểm danh</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var schedule in Model.CompletedSchedules.Take(15))
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@schedule.SessionTitle</strong><br>
+                                    <small class="text-muted">@schedule.ClassName</small>
+                                </td>
+                                <td>@schedule.SubjectName</td>
+                                <td>
+                                    @schedule.SessionDate.ToString("dd/MM/yyyy")<br>
+                                    <small class="text-muted">@schedule.StartTime.ToString(@"hh\:mm") - @schedule.EndTime.ToString(@"hh\:mm")</small>
+                                </td>
+                                <td>
+                                    @if (schedule.HasAttended)
+                                    {
+                                        <span class="badge bg-success">@schedule.AttendanceStatus</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Chưa điểm danh</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-@schedule.StatusClass">@schedule.Status</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model.CompletedSchedules.Count > 15)
+            {
+                <div class="text-center mt-3">
+                    <small class="text-muted">Hiển thị 15 buổi gần nhất. Tổng cộng: @Model.CompletedSchedules.Count buổi</small>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@if (!Model.UpcomingSchedules.Any() && !Model.TodaySchedules.Any() && !Model.CompletedSchedules.Any())
+{
+    <div class="text-center py-5">
+        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">Chưa có lịch học nào</h5>
+        <p class="text-muted">Giảng viên chưa tạo lịch học cho các lớp bạn tham gia.</p>
+    </div>
+}
+
+<!-- Detail Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel">
+                    <i class="fas fa-info-circle"></i> Chi tiết buổi học
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle detail modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const detailModal = document.getElementById('detailModal');
+        const modalContent = document.getElementById('modalContent');
+        
+        detailModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const scheduleData = JSON.parse(button.getAttribute('data-schedule'));
+
+            const sessionDate = new Date(scheduleData.SessionDate);
+
+            modalContent.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Thông tin buổi học:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Tiêu đề:</strong> ${scheduleData.SessionTitle}</li>
+                            <li class="list-group-item"><strong>Môn học:</strong> ${scheduleData.SubjectName}</li>
+                            <li class="list-group-item"><strong>Lớp:</strong> ${scheduleData.ClassName}</li>
+                            <li class="list-group-item"><strong>Giảng viên:</strong> ${scheduleData.TeacherName}</li>
+                            <li class="list-group-item"><strong>Điểm danh:</strong> ${scheduleData.AttendanceStatus}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Thời gian và địa điểm:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Ngày học:</strong> ${sessionDate.toLocaleDateString('vi-VN')}</li>
+                            <li class="list-group-item"><strong>Giờ bắt đầu:</strong> ${scheduleData.StartTime}</li>
+                            <li class="list-group-item"><strong>Giờ kết thúc:</strong> ${scheduleData.EndTime}</li>
+                            <li class="list-group-item"><strong>Địa điểm:</strong> ${scheduleData.Location}</li>
+                            <li class="list-group-item"><strong>Trạng thái:</strong> <span class="badge bg-${scheduleData.StatusClass}">${scheduleData.Status}</span></li>
+                        </ul>
+                    </div>
+                </div>
+                ${scheduleData.SessionDescription ? `
+                <div class="mt-3">
+                    <h6>Mô tả buổi học:</h6>
+                    <div class="alert alert-info">
+                        ${scheduleData.SessionDescription}
+                    </div>
+                </div>
+                ` : ''}
+            `;
+        });
+    });
+</script>

@@ -1,0 +1,134 @@
+@model StudentManagementSystem.ViewModels.CreateExamViewModel
+@{
+    ViewData["Title"] = "Sửa bài kiểm tra";
+    var examId = ViewBag.ExamId;
+    var currentFile = ViewBag.CurrentFile as string;
+    var hasSchedules = ViewBag.HasSchedules as bool? ?? false;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-edit"></i> Sửa bài kiểm tra</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="EditExam" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="@examId" />
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    @if (hasSchedules)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Lưu ý:</strong> Bài kiểm tra này đã có lịch thi. Việc thay đổi có thể ảnh hưởng đến học sinh.
+                        </div>
+                    }
+                    
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" placeholder="VD: Kiểm tra giữa kỳ môn Toán" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả nội dung, yêu cầu, hình thức kiểm tra..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(currentFile))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">File hiện tại</label>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-success me-2">
+                                    <i class="fas fa-file"></i> @System.IO.Path.GetFileName(currentFile)
+                                </span>
+                                <a href="@Url.Action("DownloadExamFile", new { id = examId })" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i> Tải xuống
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    
+                    <div class="mb-3">
+                        <label asp-for="ExamFile" class="form-label">
+                            @(string.IsNullOrEmpty(currentFile) ? "File đề thi" : "Thay đổi file đề thi")
+                        </label>
+                        <input asp-for="ExamFile" class="form-control" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+                        <span asp-validation-for="ExamFile" class="text-danger"></span>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            @if (string.IsNullOrEmpty(currentFile))
+                            {
+                                <span>Hỗ trợ file: PDF, Word (.doc, .docx), Hình ảnh (.jpg, .jpeg, .png). Tối đa 10MB.</span>
+                            }
+                            else
+                            {
+                                <span>Để trống nếu không muốn thay đổi file hiện tại.</span>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-lightbulb"></i> Lưu ý khi chỉnh sửa:</h6>
+                        <ul class="mb-0">
+                            <li>Thay đổi tiêu đề và mô tả sẽ được cập nhật ngay lập tức</li>
+                            <li>Nếu thay đổi file đề thi, file cũ sẽ được thay thế</li>
+                            <li>Học sinh đã làm bài sẽ không bị ảnh hưởng bởi việc chỉnh sửa</li>
+                            <li>Nếu có lịch thi đang diễn ra, hãy cân nhắc kỹ trước khi thay đổi</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Exams")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                        <div>
+                            @if (!hasSchedules)
+                            {
+                                <button type="button" class="btn btn-outline-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    <i class="fas fa-trash"></i> Xóa bài kiểm tra
+                                </button>
+                            }
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Cập nhật
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!hasSchedules)
+{
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa bài kiểm tra này?</p>
+                    <p class="text-danger"><small>Hành động này không thể hoàn tác!</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form asp-action="DeleteExam" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@examId" />
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

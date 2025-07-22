@@ -1,0 +1,246 @@
+@model IEnumerable<StudentManagementSystem.Models.Class>
+@{
+    ViewData["Title"] = "Lớp học của tôi";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-chalkboard-teacher"></i> Lớp học của tôi</h2>
+    <div>
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
+            <i class="fas fa-filter"></i> Lọc
+        </button>
+        <a href="@Url.Action("CreateExam")" class="btn btn-success">
+            <i class="fas fa-plus"></i> Tạo bài thi mới
+        </a>
+    </div>
+</div>
+
+<!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Lọc lớp học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="filterForm">
+                    <div class="mb-3">
+                        <label class="form-label">Học kỳ</label>
+                        <select class="form-select" id="semesterFilter">
+                            <option value="">Tất cả</option>
+                            <option value="1">Học kỳ 1</option>
+                            <option value="2">Học kỳ 2</option>
+                            <option value="3">Học kỳ hè</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Năm học</label>
+                        <select class="form-select" id="yearFilter">
+                            <option value="">Tất cả</option>
+                            @for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 5; year--)
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">Tất cả</option>
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Ngừng hoạt động</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="applyFilter()">Áp dụng</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="clearFilter()">Xóa bộ lọc</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    @if (Model.Any())
+    {
+        @foreach (var classItem in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-school"></i> @classItem.ClassName
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            @foreach (var classSubject in classItem.ClassSubjects)
+                            {
+                                <span class="badge bg-secondary me-1">@classSubject.Subject.SubjectName (@classSubject.Subject.SubjectCode)</span>
+                            }
+                        </h6>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar"></i> @classItem.Semester - @classItem.Year
+                            </small>
+                        </div>
+
+                        <div class="row text-center mb-3">
+                            <div class="col-4">
+                                <div class="border-end">
+                                    <h6 class="text-primary mb-0">@classItem.ClassStudents.Count(cs => cs.IsActive)</h6>
+                                    <small class="text-muted">Sinh viên</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="border-end">
+                                    <h6 class="text-success mb-0">@classItem.AttendanceSessions.Count</h6>
+                                    <small class="text-muted">Buổi học</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                @{
+                                    var totalSessions = classItem.AttendanceSessions.Count;
+                                    var totalStudents = classItem.ClassStudents.Count(cs => cs.IsActive);
+                                    var totalPossible = totalSessions * totalStudents;
+                                    var totalPresent = classItem.AttendanceSessions.SelectMany(ats => ats.Attendances).Count(a => a.IsPresent);
+                                    var attendanceRate = totalPossible > 0 ? (decimal)totalPresent / totalPossible * 100 : 0;
+                                }
+                                <h6 class="text-info mb-0">@attendanceRate.ToString("F1")%</h6>
+                                <small class="text-muted">Điểm danh</small>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(classItem.Description))
+                        {
+                            <p class="card-text">
+                                <small>@classItem.Description</small>
+                            </p>
+                        }
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            @if (classItem.IsActive)
+                            {
+                                <span class="badge bg-success">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Ngừng hoạt động</span>
+                            }
+                            
+                            <small class="text-muted">
+                                Tối đa: @classItem.MaxStudents sinh viên
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-grid gap-2">
+                            <a href="@Url.Action("ClassDetails", new { id = classItem.Id })" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i> Xem chi tiết
+                            </a>
+                            <div class="btn-group" role="group">
+                                <a href="@Url.Action("CreateAttendanceSession", new { classId = classItem.Id })" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i> Tạo buổi học
+                                </a>
+                                <a href="@Url.Action("CreateExam")" class="btn btn-info btn-sm">
+                                    <i class="fas fa-file-plus"></i> Tạo bài thi
+                                </a>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <a href="@Url.Action("StudentGrades", new { classId = classItem.Id })" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-star"></i> Quản lý điểm
+                                </a>
+                                <a href="@Url.Action("ExportAttendance", new { classId = classItem.Id })" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-file-excel"></i> Xuất Excel
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Bạn chưa được phân công lớp học nào</h5>
+                <p class="text-muted">Liên hệ với quản trị viên để được phân công lớp học.</p>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function applyFilter() {
+            const semester = document.getElementById('semesterFilter').value;
+            const year = document.getElementById('yearFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            const cards = document.querySelectorAll('.col-md-6.col-lg-4');
+
+            cards.forEach(card => {
+                let show = true;
+
+                // Filter by semester
+                if (semester) {
+                    const cardSemester = card.querySelector('.card-body small').textContent;
+                    if (!cardSemester.includes(`${semester} -`)) {
+                        show = false;
+                    }
+                }
+
+                // Filter by year
+                if (year) {
+                    const cardYear = card.querySelector('.card-body small').textContent;
+                    if (!cardYear.includes(`- ${year}`)) {
+                        show = false;
+                    }
+                }
+
+                // Filter by status
+                if (status) {
+                    const statusBadge = card.querySelector('.badge');
+                    if (status === 'active' && !statusBadge.classList.contains('bg-success')) {
+                        show = false;
+                    }
+                    if (status === 'inactive' && !statusBadge.classList.contains('bg-secondary')) {
+                        show = false;
+                    }
+                }
+
+                card.style.display = show ? 'block' : 'none';
+            });
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
+            modal.hide();
+        }
+
+        function clearFilter() {
+            document.getElementById('filterForm').reset();
+            const cards = document.querySelectorAll('.col-md-6.col-lg-4');
+            cards.forEach(card => {
+                card.style.display = 'block';
+            });
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
+            modal.hide();
+        }
+    </script>
+}

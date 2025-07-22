@@ -1,0 +1,206 @@
+@model StudentManagementSystem.ViewModels.GradeSubmissionViewModel
+@{
+    ViewData["Title"] = "Chấm điểm bài thi";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Student Submission -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-file-alt"></i> Bài làm của học sinh</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Học sinh:</strong> @Model.StudentName
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Thời gian nộp:</strong> @Model.SubmittedAt.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Bài kiểm tra:</strong> @Model.ExamTitle
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.AnswerText))
+                {
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Câu trả lời bằng văn bản:</strong></label>
+                        <div class="border rounded p-3 bg-light">
+                            @Html.Raw(Model.AnswerText.Replace("\n", "<br>"))
+                        </div>
+                    </div>
+                }
+                
+                @if (!string.IsNullOrEmpty(Model.AnswerFilePath))
+                {
+                    <div class="mb-3">
+                        <label class="form-label"><strong>File đính kèm:</strong></label>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-success me-2">
+                                <i class="fas fa-file"></i> @(Model.AnswerFileName ?? "File đính kèm")
+                            </span>
+                            <a href="@Url.Action("DownloadSubmission", new { id = Model.SubmissionId })" class="btn btn-outline-primary">
+                                <i class="fas fa-download"></i> Tải xuống
+                            </a>
+                        </div>
+                    </div>
+                }
+                
+                @if (string.IsNullOrEmpty(Model.AnswerText) && string.IsNullOrEmpty(Model.AnswerFilePath))
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Học sinh chưa nộp nội dung bài làm.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Grading Form -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-star"></i> Chấm điểm</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="GradeSubmission" method="post">
+                    <input type="hidden" asp-for="SubmissionId" />
+                    <input type="hidden" asp-for="StudentName" />
+                    <input type="hidden" asp-for="ExamTitle" />
+                    <input type="hidden" asp-for="SubmittedAt" />
+                    <input type="hidden" asp-for="AnswerText" />
+                    <input type="hidden" asp-for="AnswerFilePath" />
+                    <input type="hidden" asp-for="AnswerFileName" />
+                    
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Score" class="form-label"></label>
+                        <div class="input-group">
+                            <input asp-for="Score" class="form-control" type="number" min="0" max="10" step="0.1" />
+                            <span class="input-group-text">/10</span>
+                        </div>
+                        <span asp-validation-for="Score" class="text-danger"></span>
+                        <div class="form-text">
+                            Nhập điểm từ 0 đến 10 (có thể dùng số thập phân)
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Comments" class="form-label"></label>
+                        <textarea asp-for="Comments" class="form-control" rows="5" placeholder="Nhận xét về bài làm của học sinh..."></textarea>
+                        <span asp-validation-for="Comments" class="text-danger"></span>
+                    </div>
+                    
+                    <!-- Quick Score Buttons -->
+                    <div class="mb-3">
+                        <label class="form-label">Điểm nhanh:</label>
+                        <div class="d-grid gap-2">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="setScore(0)">0</button>
+                                <button type="button" class="btn btn-outline-warning btn-sm" onclick="setScore(2.5)">2.5</button>
+                                <button type="button" class="btn btn-outline-warning btn-sm" onclick="setScore(5)">5</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setScore(6.5)">6.5</button>
+                                <button type="button" class="btn btn-outline-success btn-sm" onclick="setScore(8)">8</button>
+                                <button type="button" class="btn btn-outline-success btn-sm" onclick="setScore(10)">10</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Comments -->
+                    <div class="mb-3">
+                        <label class="form-label">Nhận xét mẫu:</label>
+                        <div class="d-grid gap-1">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addComment('Bài làm tốt, đáp ứng yêu cầu.')">Tốt</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addComment('Bài làm khá, cần cải thiện một số điểm.')">Khá</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addComment('Bài làm chưa đạt yêu cầu, cần học thêm.')">Chưa đạt</button>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Lưu điểm
+                        </button>
+                        <a href="@Url.Action("Grading")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Grading Guidelines -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> Hướng dẫn chấm điểm</h6>
+            </div>
+            <div class="card-body">
+                <small>
+                    <ul class="mb-0">
+                        <li><strong>9-10:</strong> Xuất sắc</li>
+                        <li><strong>8-8.9:</strong> Giỏi</li>
+                        <li><strong>6.5-7.9:</strong> Khá</li>
+                        <li><strong>5-6.4:</strong> Trung bình</li>
+                        <li><strong>0-4.9:</strong> Yếu</li>
+                    </ul>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        function setScore(score) {
+            document.querySelector('input[name="Score"]').value = score;
+        }
+        
+        function addComment(comment) {
+            const commentsTextarea = document.querySelector('textarea[name="Comments"]');
+            if (commentsTextarea.value.trim() === '') {
+                commentsTextarea.value = comment;
+            } else {
+                commentsTextarea.value += '\n' + comment;
+            }
+        }
+        
+        // Auto-save draft (optional enhancement)
+        document.addEventListener('DOMContentLoaded', function() {
+            const scoreInput = document.querySelector('input[name="Score"]');
+            const commentsTextarea = document.querySelector('textarea[name="Comments"]');
+            const submissionId = @Model.SubmissionId;
+            
+            // Load saved draft
+            const savedScore = localStorage.getItem(`draft_score_${submissionId}`);
+            const savedComments = localStorage.getItem(`draft_comments_${submissionId}`);
+            
+            if (savedScore && scoreInput.value === '0') {
+                scoreInput.value = savedScore;
+            }
+            if (savedComments && commentsTextarea.value === '') {
+                commentsTextarea.value = savedComments;
+            }
+            
+            // Save draft on change
+            scoreInput.addEventListener('input', function() {
+                localStorage.setItem(`draft_score_${submissionId}`, this.value);
+            });
+            
+            commentsTextarea.addEventListener('input', function() {
+                localStorage.setItem(`draft_comments_${submissionId}`, this.value);
+            });
+            
+            // Clear draft on form submit
+            document.querySelector('form').addEventListener('submit', function() {
+                localStorage.removeItem(`draft_score_${submissionId}`);
+                localStorage.removeItem(`draft_comments_${submissionId}`);
+            });
+        });
+    </script>
+}

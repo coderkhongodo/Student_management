@@ -1,0 +1,233 @@
+@model IEnumerable<StudentManagementSystem.Models.ExamSchedule>
+@{
+    ViewData["Title"] = "Bài thi có sẵn";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-alt"></i> Bài thi có sẵn</h2>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Quay lại Dashboard
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @TempData["Warning"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    @if (Model.Any())
+    {
+        @foreach (var examSchedule in Model)
+        {
+            var now = DateTime.Now;
+            var isAvailable = now >= examSchedule.StartTime && now <= examSchedule.EndTime && examSchedule.IsActive;
+            var hasStarted = now >= examSchedule.StartTime;
+            var hasEnded = now > examSchedule.EndTime;
+            var hasSubmitted = examSchedule.Submissions.Any();
+            
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 @(hasSubmitted ? "border-success" : isAvailable ? "border-primary" : hasEnded ? "border-secondary" : "border-warning")">
+                    <div class="card-header @(hasSubmitted ? "bg-success" : isAvailable ? "bg-primary" : hasEnded ? "bg-secondary" : "bg-warning") text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-file-alt"></i> @examSchedule.Exam.Title
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <i class="fas fa-users"></i> Lớp: @examSchedule.ClassName
+                        </h6>
+                        
+                        @if (!string.IsNullOrEmpty(examSchedule.Exam.Description))
+                        {
+                            <p class="card-text">
+                                <small>@examSchedule.Exam.Description</small>
+                            </p>
+                        }
+                        
+                        <div class="mb-3">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="border-end">
+                                        <strong class="text-primary">@examSchedule.StartTime.ToString("dd/MM/yyyy")</strong>
+                                        <br><small class="text-muted">Ngày thi</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <strong class="text-info">@examSchedule.DurationMinutes phút</strong>
+                                    <br><small class="text-muted">Thời lượng</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Thời gian:</strong> @examSchedule.StartTime.ToString("HH:mm") - @examSchedule.EndTime.ToString("HH:mm")
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(examSchedule.Location))
+                        {
+                            <div class="mb-3">
+                                <strong>Địa điểm:</strong> @examSchedule.Location
+                            </div>
+                        }
+                        
+                        @if (!string.IsNullOrEmpty(examSchedule.Instructions))
+                        {
+                            <div class="mb-3">
+                                <strong>Hướng dẫn:</strong>
+                                <small class="text-muted">@examSchedule.Instructions</small>
+                            </div>
+                        }
+                        
+                        <!-- Status Badge -->
+                        <div class="mb-3">
+                            @if (hasSubmitted)
+                            {
+                                <span class="badge bg-success fs-6">
+                                    <i class="fas fa-check-circle"></i> Đã nộp bài
+                                </span>
+                            }
+                            else if (isAvailable)
+                            {
+                                <span class="badge bg-primary fs-6">
+                                    <i class="fas fa-play-circle"></i> Đang diễn ra
+                                </span>
+                            }
+                            else if (!hasStarted)
+                            {
+                                <span class="badge bg-warning fs-6">
+                                    <i class="fas fa-clock"></i> Chưa bắt đầu
+                                </span>
+                            }
+                            else if (hasEnded)
+                            {
+                                <span class="badge bg-secondary fs-6">
+                                    <i class="fas fa-stop-circle"></i> Đã kết thúc
+                                </span>
+                            }
+                        </div>
+                        
+                        <!-- Countdown Timer for upcoming exams -->
+                        @if (!hasStarted && !hasEnded)
+                        {
+                            <div class="alert alert-info">
+                                <small>
+                                    <i class="fas fa-clock"></i>
+                                    <strong>Bắt đầu sau:</strong>
+                                    <span id="countdown-@examSchedule.Id"></span>
+                                </small>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        @if (hasSubmitted)
+                        {
+                            <div class="d-grid">
+                                <a href="@Url.Action("MySubmissions")" class="btn btn-success">
+                                    <i class="fas fa-eye"></i> Xem bài đã nộp
+                                </a>
+                            </div>
+                        }
+                        else if (isAvailable)
+                        {
+                            <div class="d-grid">
+                                <a href="@Url.Action("TakeExam", new { id = examSchedule.Id })" class="btn btn-primary">
+                                    <i class="fas fa-pencil-alt"></i> Làm bài ngay
+                                </a>
+                            </div>
+                        }
+                        else if (!hasStarted)
+                        {
+                            <div class="d-grid">
+                                <button class="btn btn-outline-warning" disabled>
+                                    <i class="fas fa-clock"></i> Chờ đến giờ thi
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-grid">
+                                <button class="btn btn-outline-secondary" disabled>
+                                    <i class="fas fa-times"></i> Đã hết hạn
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Hiện tại không có bài thi nào</h5>
+                <p class="text-muted">Hãy kiểm tra lại sau hoặc liên hệ với giảng viên để biết thêm thông tin.</p>
+                <a href="@Url.Action("Index")" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Về Dashboard
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Countdown timer for upcoming exams
+        @foreach (var examSchedule in Model.Where(es => DateTime.Now < es.StartTime))
+        {
+            <text>
+            setInterval(function() {
+                var startTime = new Date('@examSchedule.StartTime.ToString("yyyy-MM-ddTHH:mm:ss")');
+                var now = new Date();
+                var diff = startTime - now;
+                
+                if (diff > 0) {
+                    var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    var countdownText = '';
+                    if (days > 0) countdownText += days + ' ngày ';
+                    if (hours > 0) countdownText += hours + ' giờ ';
+                    if (minutes > 0) countdownText += minutes + ' phút ';
+                    countdownText += seconds + ' giây';
+                    
+                    document.getElementById('countdown-@examSchedule.Id').textContent = countdownText;
+                } else {
+                    document.getElementById('countdown-@examSchedule.Id').textContent = 'Đã bắt đầu!';
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                }
+            }, 1000);
+            </text>
+        }
+        
+        // Auto refresh every 30 seconds to update exam status
+        setInterval(function() {
+            location.reload();
+        }, 30000);
+    </script>
+}

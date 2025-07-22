@@ -1,0 +1,115 @@
+@model StudentManagementSystem.ViewModels.CreateAttendanceSessionViewModel
+@{
+    ViewData["Title"] = "Tạo buổi học mới";
+    var classEntity = ViewBag.Class as StudentManagementSystem.Models.Class;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4><i class="fas fa-plus"></i> Tạo buổi học mới</h4>
+                <p class="mb-0">Lớp: @classEntity?.ClassName - @(classEntity?.ClassSubjects?.FirstOrDefault()?.Subject?.SubjectName ?? "Chưa có môn học")</p>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateAttendanceSession" method="post">
+                    <input asp-for="ClassId" type="hidden" />
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="SessionTitle" class="form-label"></label>
+                        <input asp-for="SessionTitle" class="form-control" placeholder="VD: Bài 1 - Giới thiệu môn học" />
+                        <span asp-validation-for="SessionTitle" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="SessionDate" class="form-label"></label>
+                                <input asp-for="SessionDate" class="form-control" type="date" />
+                                <span asp-validation-for="SessionDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Location" class="form-label"></label>
+                                <input asp-for="Location" class="form-control" placeholder="VD: Phòng A101" />
+                                <span asp-validation-for="Location" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="StartTime" class="form-label"></label>
+                                <input asp-for="StartTime" class="form-control" type="time" />
+                                <span asp-validation-for="StartTime" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="EndTime" class="form-label"></label>
+                                <input asp-for="EndTime" class="form-control" type="time" />
+                                <span asp-validation-for="EndTime" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" 
+                                  placeholder="Nhập nội dung buổi học, mục tiêu học tập..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("ClassDetails", new { id = Model.ClassId })" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Tạo buổi học
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Set default times based on current time
+        document.addEventListener('DOMContentLoaded', function() {
+            var now = new Date();
+            var startTime = document.getElementById('StartTime');
+            var endTime = document.getElementById('EndTime');
+            
+            if (!startTime.value) {
+                var start = new Date(now);
+                start.setMinutes(0, 0, 0); // Round to nearest hour
+                startTime.value = start.toTimeString().slice(0, 5);
+            }
+            
+            if (!endTime.value) {
+                var end = new Date(now);
+                end.setHours(end.getHours() + 2); // 2 hours later
+                end.setMinutes(0, 0, 0);
+                endTime.value = end.toTimeString().slice(0, 5);
+            }
+        });
+        
+        // Validate end time is after start time
+        document.getElementById('EndTime').addEventListener('change', function() {
+            var startTime = document.getElementById('StartTime').value;
+            var endTime = this.value;
+            
+            if (startTime && endTime && endTime <= startTime) {
+                alert('Giờ kết thúc phải sau giờ bắt đầu!');
+                this.focus();
+            }
+        });
+    </script>
+}

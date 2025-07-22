@@ -1,0 +1,203 @@
+@model IEnumerable<StudentManagementSystem.Models.ExamSchedule>
+@{
+    ViewData["Title"] = "Quản lý lịch thi";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-alt"></i> Quản lý lịch thi</h2>
+    <a href="@Url.Action("CreateSchedule")" class="btn btn-success">
+        <i class="fas fa-plus"></i> Tạo lịch thi mới
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Bài kiểm tra</th>
+                            <th>Lớp học</th>
+                            <th>Thời gian</th>
+                            <th>Thời lượng</th>
+                            <th>Địa điểm</th>
+                            <th>Số bài nộp</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var schedule in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@schedule.Exam.Title</strong>
+                                    @if (!string.IsNullOrEmpty(schedule.Exam.Description))
+                                    {
+                                        <br><small class="text-muted">@(schedule.Exam.Description.Length > 30 ? schedule.Exam.Description.Substring(0, 30) + "..." : schedule.Exam.Description)</small>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">@schedule.ClassName</span>
+                                    @if (schedule.Class != null)
+                                    {
+                                        <br><small class="text-muted">@schedule.Class.ClassStudents.Count sinh viên</small>
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@schedule.StartTime.ToString("dd/MM/yyyy")</strong><br>
+                                    <small>@schedule.StartTime.ToString("HH:mm") - @schedule.EndTime.ToString("HH:mm")</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">@schedule.DurationMinutes phút</span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(schedule.Location))
+                                    {
+                                        <span>@schedule.Location</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa xác định</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@schedule.Submissions.Count bài</span>
+                                </td>
+                                <td>
+                                    @{
+                                        var now = DateTime.Now;
+                                        var status = "";
+                                        var badgeClass = "";
+                                        
+                                        if (now < schedule.StartTime)
+                                        {
+                                            status = "Chưa bắt đầu";
+                                            badgeClass = "bg-warning";
+                                        }
+                                        else if (now >= schedule.StartTime && now <= schedule.EndTime)
+                                        {
+                                            status = "Đang diễn ra";
+                                            badgeClass = "bg-success";
+                                        }
+                                        else
+                                        {
+                                            status = "Đã kết thúc";
+                                            badgeClass = "bg-secondary";
+                                        }
+                                    }
+                                    <span class="badge @badgeClass">@status</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        @if (DateTime.Now < schedule.StartTime)
+                                        {
+                                            <a href="@Url.Action("EditSchedule", new { id = schedule.Id })" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i> Sửa
+                                            </a>
+                                        }
+                                        @if (schedule.Submissions.Any())
+                                        {
+                                            <a href="@Url.Action("Grading", new { scheduleId = schedule.Id })" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-star"></i> Chấm điểm
+                                            </a>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailModal-@schedule.Id">
+                                            <i class="fas fa-eye"></i> Xem
+                                        </button>
+                                        @if (!schedule.Submissions.Any() && DateTime.Now < schedule.StartTime)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@schedule.Id">
+                                                <i class="fas fa-trash"></i> Xóa
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có lịch thi nào</h5>
+                <p class="text-muted">Hãy tạo lịch thi đầu tiên cho bài kiểm tra của bạn</p>
+                <a href="@Url.Action("CreateSchedule")" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Tạo lịch thi mới
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count()</h4>
+                        <p class="mb-0">Tổng lịch thi</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(s => DateTime.Now < s.StartTime)</h4>
+                        <p class="mb-0">Chưa bắt đầu</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(s => DateTime.Now >= s.StartTime && DateTime.Now <= s.EndTime)</h4>
+                        <p class="mb-0">Đang diễn ra</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-play fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Sum(s => s.Submissions.Count)</h4>
+                        <p class="mb-0">Bài đã nộp</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-file-upload fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

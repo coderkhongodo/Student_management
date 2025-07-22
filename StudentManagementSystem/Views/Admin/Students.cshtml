@@ -1,0 +1,119 @@
+@model IEnumerable<StudentManagementSystem.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "Quản lý học sinh";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-user-graduate"></i> Quản lý học sinh</h2>
+    <a href="@Url.Action("CreateStudent")" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Thêm học sinh mới
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Mã SV</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Ngày sinh</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@student.StudentId</td>
+                                <td>@student.FullName</td>
+                                <td>@student.Email</td>
+                                <td>@(student.DateOfBirth == default ? "Chưa cập nhật" : student.DateOfBirth.ToString("dd/MM/yyyy"))</td>
+                                <td>@student.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("EditStudent", new { id = student.Id })" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailModal-@student.Id">
+                                            <i class="fas fa-eye"></i> Xem
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có học sinh nào</h5>
+                <p class="text-muted">Hãy thêm học sinh đầu tiên cho hệ thống</p>
+                <a href="@Url.Action("CreateStudent")" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Thêm học sinh mới
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Detail Modals -->
+@foreach (var student in Model)
+{
+    <div class="modal fade" id="detailModal-@student.Id" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết học sinh</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Mã sinh viên:</dt>
+                        <dd class="col-sm-8">@student.StudentId</dd>
+                        
+                        <dt class="col-sm-4">Họ tên:</dt>
+                        <dd class="col-sm-8">@student.FullName</dd>
+                        
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8">@student.Email</dd>
+                        
+                        <dt class="col-sm-4">Số điện thoại:</dt>
+                        <dd class="col-sm-8">@(student.PhoneNumber ?? "Chưa cập nhật")</dd>
+                        
+                        <dt class="col-sm-4">Địa chỉ:</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(student.Address) ? "Chưa cập nhật" : student.Address)</dd>
+                        
+                        <dt class="col-sm-4">Ngày sinh:</dt>
+                        <dd class="col-sm-8">@(student.DateOfBirth == default ? "Chưa cập nhật" : student.DateOfBirth.ToString("dd/MM/yyyy"))</dd>
+                        
+                        <dt class="col-sm-4">Ngày tạo:</dt>
+                        <dd class="col-sm-8">@student.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <a href="@Url.Action("EditStudent", new { id = student.Id })" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Chỉnh sửa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

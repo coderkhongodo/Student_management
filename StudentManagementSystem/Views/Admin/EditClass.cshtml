@@ -1,0 +1,136 @@
+@model StudentManagementSystem.ViewModels.EditClassViewModel
+@{
+    ViewData["Title"] = "Sửa lớp học";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-edit"></i> Sửa lớp học</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="EditClass" method="post">
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="ClassName" class="form-label"></label>
+                                <input asp-for="ClassName" class="form-control" placeholder="VD: Lớp CS101-01" />
+                                <span asp-validation-for="ClassName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="MaxStudents" class="form-label"></label>
+                                <input asp-for="MaxStudents" class="form-control" type="number" min="1" max="100" />
+                                <span asp-validation-for="MaxStudents" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label asp-for="TeacherUserId" class="form-label"></label>
+                                <select asp-for="TeacherUserId" class="form-select">
+                                    <option value="">-- Chọn giảng viên --</option>
+                                    @foreach (var teacher in (ViewBag.Teachers as IEnumerable<StudentManagementSystem.Models.ApplicationUser>) ?? Enumerable.Empty<StudentManagementSystem.Models.ApplicationUser>())
+                                    {
+                                        <option value="@teacher.Id">@teacher.FullName (@teacher.EmployeeId)</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="TeacherUserId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Semester" class="form-label"></label>
+                                <select asp-for="Semester" class="form-select">
+                                    <option value="">-- Chọn học kỳ --</option>
+                                    <option value="HK1">Học kỳ 1</option>
+                                    <option value="HK2">Học kỳ 2</option>
+                                    <option value="HK3">Học kỳ 3 (Hè)</option>
+                                </select>
+                                <span asp-validation-for="Semester" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Year" class="form-label"></label>
+                                <input asp-for="Year" class="form-control" type="number" min="2020" max="2030" />
+                                <span asp-validation-for="Year" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập mô tả lớp học (tùy chọn)"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <!-- Môn học -->
+                    <div class="mb-3">
+                        <label asp-for="SubjectIds" class="form-label"></label>
+                        <div class="form-text mb-2">Chọn các môn học cho lớp (bắt buộc chọn ít nhất một môn)</div>
+
+                        <div class="row">
+                            @{
+                                var subjects = ViewBag.Subjects as IEnumerable<StudentManagementSystem.Models.Subject>;
+                                if (subjects != null)
+                                {
+                                    var subjectList = subjects.ToList();
+                                    for (int i = 0; i < subjectList.Count; i++)
+                                    {
+                                        var subject = subjectList[i];
+                                        var isChecked = Model.SubjectIds != null && Model.SubjectIds.Contains(subject.Id);
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                       name="SubjectIds" value="@subject.Id"
+                                                       id="subject-@subject.Id"
+                                                       @(isChecked ? "checked" : "") />
+                                                <label class="form-check-label" for="subject-@subject.Id">
+                                                    @subject.SubjectName (@subject.SubjectCode)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                        <span asp-validation-for="SubjectIds" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                            <label asp-for="IsActive" class="form-check-label">
+                                Lớp học đang hoạt động
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Classes")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Cập nhật lớp học
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

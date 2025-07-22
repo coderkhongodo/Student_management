@@ -1,0 +1,143 @@
+@model StudentManagementSystem.ViewModels.CreateStudentGradeViewModel
+@{
+    ViewData["Title"] = "Thêm điểm số mới";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4><i class="fas fa-plus"></i> Thêm điểm số mới</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateStudentGrade" method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="StudentUserId" class="form-label"></label>
+                                <select asp-for="StudentUserId" class="form-select">
+                                    <option value="">-- Chọn học sinh --</option>
+                                    @foreach (var student in ViewBag.Students as IEnumerable<StudentManagementSystem.Models.ApplicationUser>)
+                                    {
+                                        <option value="@student.Id">@student.FullName (@student.StudentId)</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="StudentUserId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="SubjectId" class="form-label"></label>
+                                <select asp-for="SubjectId" class="form-select">
+                                    <option value="">-- Chọn môn học --</option>
+                                    @foreach (var subject in ViewBag.Subjects as IEnumerable<StudentManagementSystem.Models.Subject>)
+                                    {
+                                        <option value="@subject.Id">@subject.SubjectName (@subject.SubjectCode)</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="SubjectId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="MidtermScore" class="form-label"></label>
+                                <input asp-for="MidtermScore" class="form-control" type="number" min="0" max="10" step="0.1" placeholder="VD: 8.5" />
+                                <span asp-validation-for="MidtermScore" class="text-danger"></span>
+                                <div class="form-text">Điểm từ 0 đến 10</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="FinalScore" class="form-label"></label>
+                                <input asp-for="FinalScore" class="form-control" type="number" min="0" max="10" step="0.1" placeholder="VD: 7.5" />
+                                <span asp-validation-for="FinalScore" class="text-danger"></span>
+                                <div class="form-text">Điểm từ 0 đến 10</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label asp-for="TotalScore" class="form-label"></label>
+                                <input asp-for="TotalScore" class="form-control" type="number" min="0" max="10" step="0.1" placeholder="VD: 8.0" />
+                                <span asp-validation-for="TotalScore" class="text-danger"></span>
+                                <div class="form-text">Điểm từ 0 đến 10</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Semester" class="form-label"></label>
+                                <select asp-for="Semester" class="form-select">
+                                    <option value="">-- Chọn học kỳ --</option>
+                                    <option value="HK1">Học kỳ 1</option>
+                                    <option value="HK2">Học kỳ 2</option>
+                                    <option value="HK3">Học kỳ 3 (Hè)</option>
+                                </select>
+                                <span asp-validation-for="Semester" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Year" class="form-label"></label>
+                                <input asp-for="Year" class="form-control" type="number" min="2020" max="2030" />
+                                <span asp-validation-for="Year" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Comments" class="form-label"></label>
+                        <textarea asp-for="Comments" class="form-control" rows="3" placeholder="Ghi chú về điểm số (tùy chọn)"></textarea>
+                        <span asp-validation-for="Comments" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Lưu ý:</strong> Bạn có thể để trống một số điểm nếu chưa có. Điểm tổng kết sẽ được tính tự động nếu để trống.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("StudentGrades")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Tạo điểm số
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Auto calculate total score
+        document.addEventListener('DOMContentLoaded', function() {
+            const midtermInput = document.querySelector('input[name="MidtermScore"]');
+            const finalInput = document.querySelector('input[name="FinalScore"]');
+            const totalInput = document.querySelector('input[name="TotalScore"]');
+            
+            function calculateTotal() {
+                const midterm = parseFloat(midtermInput.value) || 0;
+                const final = parseFloat(finalInput.value) || 0;
+                
+                if (midterm > 0 && final > 0) {
+                    const total = (midterm * 0.4 + final * 0.6).toFixed(1);
+                    totalInput.value = total;
+                }
+            }
+            
+            midtermInput.addEventListener('input', calculateTotal);
+            finalInput.addEventListener('input', calculateTotal);
+        });
+    </script>
+}

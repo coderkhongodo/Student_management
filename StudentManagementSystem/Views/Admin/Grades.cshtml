@@ -1,0 +1,192 @@
+@model IEnumerable<StudentManagementSystem.Models.Grade>
+@{
+    ViewData["Title"] = "Tất cả điểm số bài kiểm tra";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-chart-line"></i> Tất cả điểm số bài kiểm tra</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Học sinh</th>
+                            <th>Bài kiểm tra</th>
+                            <th>Điểm số</th>
+                            <th>Thời gian nộp</th>
+                            <th>Người chấm</th>
+                            <th>Thời gian chấm</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var grade in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@grade.Student.FullName</strong><br>
+                                    <small class="text-muted">@grade.Student.StudentId</small>
+                                </td>
+                                <td>
+                                    <strong>@grade.Submission.ExamSchedule.Exam.Title</strong><br>
+                                    <small class="text-muted">
+                                        Lịch thi: @grade.Submission.ExamSchedule.StartTime.ToString("dd/MM/yyyy HH:mm")
+                                    </small>
+                                </td>
+                                <td>
+                                    @{
+                                        var badgeClass = grade.Score >= 8.0m ? "bg-success" :
+                                                        grade.Score >= 6.5m ? "bg-primary" :
+                                                        grade.Score >= 5.0m ? "bg-warning" : "bg-danger";
+                                    }
+                                    <span class="badge @badgeClass fs-6">@grade.Score.ToString("F1")/10</span>
+                                </td>
+                                <td>
+                                    @grade.Submission.SubmittedAt.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td>
+                                    @if (grade.GradedBy != null)
+                                    {
+                                        <small>@grade.GradedBy.FullName</small><br>
+                                        <small class="text-muted">@grade.GradedBy.EmployeeId</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa xác định</span>
+                                    }
+                                </td>
+                                <td>
+                                    @grade.GradedAt.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(grade.Comments))
+                                    {
+                                        <span title="@grade.Comments">
+                                            @(grade.Comments.Length > 30 ? grade.Comments.Substring(0, 30) + "..." : grade.Comments)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không có</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có điểm số nào</h5>
+                <p class="text-muted">Chưa có học sinh nào hoàn thành bài kiểm tra</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count()</h4>
+                        <p class="mb-0">Tổng bài đã chấm</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(g => g.Score >= 8.0m)</h4>
+                        <p class="mb-0">Điểm giỏi (≥8.0)</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-star fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(g => g.Score >= 6.5m && g.Score < 8.0m)</h4>
+                        <p class="mb-0">Điểm khá (6.5-7.9)</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-thumbs-up fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>@Model.Count(g => g.Score < 5.0m)</h4>
+                        <p class="mb-0">Điểm yếu (<5.0)</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Điểm trung bình</h5>
+                </div>
+                <div class="card-body">
+                    <h3 class="text-primary">@Model.Average(g => g.Score).ToString("F2")</h3>
+                    <p class="text-muted mb-0">Điểm trung bình toàn hệ thống</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-percentage"></i> Tỷ lệ đậu</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var passRate = (double)Model.Count(g => g.Score >= 5.0m) / Model.Count() * 100;
+                    }
+                    <h3 class="text-success">@passRate.ToString("F1")%</h3>
+                    <p class="text-muted mb-0">Tỷ lệ học sinh đạt điểm ≥ 5.0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

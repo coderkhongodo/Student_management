@@ -1,0 +1,132 @@
+@model IEnumerable<StudentManagementSystem.Models.StudentGrade>
+@{
+    ViewData["Title"] = "Quản lý điểm số";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-star"></i> Quản lý điểm số</h2>
+    <a href="@Url.Action("CreateStudentGrade")" class="btn btn-success">
+        <i class="fas fa-plus"></i> Thêm điểm số mới
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Học sinh</th>
+                            <th>Môn học</th>
+                            <th>Điểm giữa kỳ</th>
+                            <th>Điểm cuối kỳ</th>
+                            <th>Điểm tổng kết</th>
+                            <th>Học kỳ</th>
+                            <th>Năm học</th>
+                            <th>Người tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var grade in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@grade.Student.FullName</strong><br>
+                                    <small class="text-muted">@grade.Student.StudentId</small>
+                                </td>
+                                <td>
+                                    <strong>@grade.Subject.SubjectName</strong><br>
+                                    <small class="text-muted">@grade.Subject.SubjectCode</small>
+                                </td>
+                                <td>
+                                    @if (grade.MidtermScore > 0)
+                                    {
+                                        <span class="badge bg-info">@grade.MidtermScore.ToString("F1")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa có</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (grade.FinalScore > 0)
+                                    {
+                                        <span class="badge bg-warning">@grade.FinalScore.ToString("F1")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Chưa có</span>
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        var badgeClass = grade.TotalScore >= 8.0m ? "bg-success" :
+                                                        grade.TotalScore >= 6.5m ? "bg-primary" :
+                                                        grade.TotalScore >= 5.0m ? "bg-warning" : "bg-danger";
+                                    }
+                                    <span class="badge @badgeClass">@grade.TotalScore.ToString("F1")</span>
+                                </td>
+                                <td>@grade.Semester</td>
+                                <td>@grade.Year</td>
+                                <td>
+                                    <small>@grade.CreatedBy.FullName</small><br>
+                                    <small class="text-muted">@grade.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("EditStudentGrade", new { id = grade.Id })" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@grade.Id">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có điểm số nào</h5>
+                <p class="text-muted">Hãy thêm điểm số đầu tiên cho hệ thống</p>
+                <a href="@Url.Action("CreateStudentGrade")" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Thêm điểm số mới
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Modals -->
+@foreach (var grade in Model)
+{
+    <div class="modal fade" id="deleteModal-@grade.Id" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa điểm số của <strong>@grade.Student.FullName</strong> môn <strong>@grade.Subject.SubjectName</strong>?</p>
+                    <p class="text-danger"><small>Hành động này không thể hoàn tác!</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form asp-action="DeleteStudentGrade" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@grade.Id" />
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

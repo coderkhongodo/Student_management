@@ -1,0 +1,299 @@
+@model StudentManagementSystem.ViewModels.TakeExamViewModel
+@{
+    ViewData["Title"] = "Làm bài kiểm tra";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Exam Content -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-file-alt"></i> @Model.ExamTitle</h4>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ExamDescription))
+                    {
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Mô tả bài thi:</h6>
+                            <p class="mb-0">@Model.ExamDescription</p>
+                        </div>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Model.Instructions))
+                    {
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Hướng dẫn làm bài:</h6>
+                            <p class="mb-0">@Model.Instructions</p>
+                        </div>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Model.ExamFilePath))
+                    {
+                        <div class="mb-4">
+                            <h6><i class="fas fa-file-download"></i> Đề thi:</h6>
+                            <a href="@Url.Action("DownloadExamFile", "Teacher", new { id = Model.ExamId })" class="btn btn-outline-primary" target="_blank">
+                                <i class="fas fa-download"></i> Tải xuống đề thi (@Model.ExamFileName)
+                            </a>
+                            <small class="text-muted d-block mt-1">
+                                Nhấn để tải xuống và xem đề thi. File sẽ mở trong tab mới.
+                            </small>
+                        </div>
+                    }
+                    
+                    <form asp-action="SubmitExam" method="post" enctype="multipart/form-data" id="examForm">
+                        <input type="hidden" asp-for="ExamScheduleId" />
+                        <input type="hidden" asp-for="ExamId" />
+                        <input type="hidden" asp-for="ExamTitle" />
+                        <input type="hidden" asp-for="ExamDescription" />
+                        <input type="hidden" asp-for="Instructions" />
+                        <input type="hidden" asp-for="ExamFilePath" />
+                        <input type="hidden" asp-for="ExamFileName" />
+                        <input type="hidden" asp-for="StartTime" />
+                        <input type="hidden" asp-for="EndTime" />
+                        
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="AnswerText" class="form-label">
+                                <i class="fas fa-edit"></i> Câu trả lời bằng văn bản:
+                            </label>
+                            <textarea asp-for="AnswerText" class="form-control" rows="10" 
+                                      placeholder="Nhập câu trả lời của bạn vào đây..."></textarea>
+                            <span asp-validation-for="AnswerText" class="text-danger"></span>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Bạn có thể nhập câu trả lời trực tiếp vào ô này hoặc upload file bên dưới.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="AnswerFile" class="form-label">
+                                <i class="fas fa-file-upload"></i> Hoặc upload file câu trả lời:
+                            </label>
+                            <input asp-for="AnswerFile" class="form-control" type="file" 
+                                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" />
+                            <span asp-validation-for="AnswerFile" class="text-danger"></span>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i>
+                                Hỗ trợ: PDF, Word (.doc, .docx), Hình ảnh (.jpg, .jpeg, .png), Text (.txt). Tối đa 10MB.
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Lưu ý quan trọng:</h6>
+                            <ul class="mb-0">
+                                <li>Bạn chỉ có thể nộp bài <strong>một lần duy nhất</strong></li>
+                                <li>Sau khi nộp bài, bạn không thể chỉnh sửa</li>
+                                <li>Hãy kiểm tra kỹ câu trả lời trước khi nộp</li>
+                                <li>Nộp bài trước khi hết thời gian</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("AvailableExams")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#submitModal">
+                                <i class="fas fa-paper-plane"></i> Nộp bài
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Timer -->
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-clock"></i> Thời gian còn lại</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div id="timer" class="display-4 text-danger">
+                        <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+                    </div>
+                    <div class="progress mt-3">
+                        <div id="timeProgress" class="progress-bar bg-warning" role="progressbar" style="width: 100%"></div>
+                    </div>
+                    <small class="text-muted">Tự động nộp bài khi hết giờ</small>
+                </div>
+            </div>
+            
+            <!-- Exam Info -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-info-circle"></i> Thông tin bài thi</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-5">Bắt đầu:</dt>
+                        <dd class="col-sm-7">@Model.StartTime.ToString("HH:mm dd/MM/yyyy")</dd>
+                        
+                        <dt class="col-sm-5">Kết thúc:</dt>
+                        <dd class="col-sm-7">@Model.EndTime.ToString("HH:mm dd/MM/yyyy")</dd>
+                        
+                        <dt class="col-sm-5">Thời lượng:</dt>
+                        <dd class="col-sm-7">@((Model.EndTime - Model.StartTime).TotalMinutes) phút</dd>
+                    </dl>
+                </div>
+            </div>
+            
+            <!-- Auto Save Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h6><i class="fas fa-save"></i> Tự động lưu</h6>
+                </div>
+                <div class="card-body">
+                    <div id="autoSaveStatus" class="text-success">
+                        <i class="fas fa-check-circle"></i> Đã lưu
+                    </div>
+                    <small class="text-muted">Câu trả lời được tự động lưu mỗi 30 giây</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div class="modal fade" id="submitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận nộp bài</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Bạn có chắc chắn muốn nộp bài?</strong>
+                </div>
+                <p>Sau khi nộp bài, bạn không thể chỉnh sửa câu trả lời. Hãy kiểm tra kỹ trước khi xác nhận.</p>
+                <div id="submissionSummary">
+                    <h6>Tóm tắt bài làm:</h6>
+                    <ul>
+                        <li id="textAnswerStatus">Câu trả lời văn bản: <span class="text-muted">Chưa có</span></li>
+                        <li id="fileAnswerStatus">File đính kèm: <span class="text-muted">Chưa có</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success" onclick="submitExam()">
+                    <i class="fas fa-paper-plane"></i> Xác nhận nộp bài
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        var endTime = new Date('@Model.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")');
+        var startTime = new Date('@Model.StartTime.ToString("yyyy-MM-ddTHH:mm:ss")');
+        var totalDuration = endTime - startTime;
+        
+        // Timer countdown
+        function updateTimer() {
+            var now = new Date();
+            var timeLeft = endTime - now;
+            
+            if (timeLeft <= 0) {
+                // Auto submit when time is up
+                document.getElementById('timer').innerHTML = '<span class="text-danger">HẾT GIỜ!</span>';
+                document.getElementById('examForm').submit();
+                return;
+            }
+            
+            var hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            
+            // Update progress bar
+            var elapsed = totalDuration - timeLeft;
+            var progress = (elapsed / totalDuration) * 100;
+            document.getElementById('timeProgress').style.width = progress + '%';
+            
+            // Change color based on time left
+            if (timeLeft < 5 * 60 * 1000) { // Less than 5 minutes
+                document.getElementById('timer').className = 'display-4 text-danger';
+                document.getElementById('timeProgress').className = 'progress-bar bg-danger';
+            } else if (timeLeft < 15 * 60 * 1000) { // Less than 15 minutes
+                document.getElementById('timer').className = 'display-4 text-warning';
+                document.getElementById('timeProgress').className = 'progress-bar bg-warning';
+            }
+        }
+        
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+        updateTimer();
+        
+        // Auto save functionality
+        var autoSaveInterval;
+        function autoSave() {
+            var answerText = document.querySelector('textarea[name="AnswerText"]').value;
+            if (answerText.trim()) {
+                localStorage.setItem('exam_@(Model.ExamScheduleId)_answer', answerText);
+                document.getElementById('autoSaveStatus').innerHTML = '<i class="fas fa-check-circle"></i> Đã lưu lúc ' + new Date().toLocaleTimeString();
+            }
+        }
+        
+        // Load saved answer
+        var savedAnswer = localStorage.getItem('exam_@(Model.ExamScheduleId)_answer');
+        if (savedAnswer) {
+            document.querySelector('textarea[name="AnswerText"]').value = savedAnswer;
+        }
+
+        // Auto save every 30 seconds
+        autoSaveInterval = setInterval(autoSave, 30000);
+
+        // Save on text change
+        document.querySelector('textarea[name="AnswerText"]').addEventListener('input', function() {
+            clearTimeout(this.saveTimeout);
+            this.saveTimeout = setTimeout(autoSave, 2000);
+        });
+        
+        // Update submission summary
+        function updateSubmissionSummary() {
+            var textAnswer = document.querySelector('textarea[name="AnswerText"]').value;
+            var fileInput = document.querySelector('input[name="AnswerFile"]');
+            
+            if (textAnswer.trim()) {
+                document.getElementById('textAnswerStatus').innerHTML = 'Câu trả lời văn bản: <span class="text-success">Có (' + textAnswer.length + ' ký tự)</span>';
+            } else {
+                document.getElementById('textAnswerStatus').innerHTML = 'Câu trả lời văn bản: <span class="text-muted">Chưa có</span>';
+            }
+            
+            if (fileInput.files.length > 0) {
+                document.getElementById('fileAnswerStatus').innerHTML = 'File đính kèm: <span class="text-success">' + fileInput.files[0].name + '</span>';
+            } else {
+                document.getElementById('fileAnswerStatus').innerHTML = 'File đính kèm: <span class="text-muted">Chưa có</span>';
+            }
+        }
+        
+        // Update summary when modal opens
+        document.getElementById('submitModal').addEventListener('show.bs.modal', updateSubmissionSummary);
+        
+        function submitExam() {
+            // Clear auto save
+            localStorage.removeItem('exam_@(Model.ExamScheduleId)_answer');
+            clearInterval(autoSaveInterval);
+
+            // Submit form
+            document.getElementById('examForm').submit();
+        }
+        
+        // Prevent accidental page leave
+        window.addEventListener('beforeunload', function(e) {
+            e.preventDefault();
+            e.returnValue = 'Bạn có chắc chắn muốn rời khỏi trang? Bài làm có thể bị mất.';
+        });
+    </script>
+}

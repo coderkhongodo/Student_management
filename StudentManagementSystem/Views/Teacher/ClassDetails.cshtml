@@ -1,0 +1,322 @@
+@model StudentManagementSystem.ViewModels.ClassDetailsViewModel
+@{
+    ViewData["Title"] = "Chi tiết lớp học";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-school"></i> @Model.Class.ClassName</h2>
+    <div>
+        <div class="btn-group" role="group">
+            <a href="@Url.Action("CreateAttendanceSession", new { classId = Model.Class.Id })" class="btn btn-success">
+                <i class="fas fa-plus"></i> Tạo buổi học
+            </a>
+            <a href="@Url.Action("StudentGrades", new { classId = Model.Class.Id })" class="btn btn-warning">
+                <i class="fas fa-star"></i> Quản lý điểm
+            </a>
+        </div>
+        <div class="btn-group ms-2" role="group">
+            <a href="@Url.Action("ExportAttendanceReport", new { classId = Model.Class.Id })" class="btn btn-info">
+                <i class="fas fa-file-excel"></i> Xuất Excel
+            </a>
+            <a href="@Url.Action("MyClasses")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Thông tin lớp học -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Thông tin lớp học</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Môn học:</dt>
+                    <dd class="col-sm-9">
+                        @foreach (var classSubject in Model.Class.ClassSubjects)
+                        {
+                            <span class="badge bg-primary me-1">@classSubject.Subject.SubjectName (@classSubject.Subject.SubjectCode)</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Học kỳ:</dt>
+                    <dd class="col-sm-9">@Model.Class.Semester - @Model.Class.Year</dd>
+
+                    <dt class="col-sm-3">Giảng viên:</dt>
+                    <dd class="col-sm-9">@Model.Class.TeacherUser.FirstName @Model.Class.TeacherUser.LastName</dd>
+
+                    <dt class="col-sm-3">Số tín chỉ:</dt>
+                    <dd class="col-sm-9">@Model.Class.ClassSubjects.Sum(cs => cs.Subject.Credits)</dd>
+                    
+                    <dt class="col-sm-3">Mô tả:</dt>
+                    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Class.Description) ? "Chưa có mô tả" : Model.Class.Description)</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Thống kê</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <h4 class="text-primary">@Model.TotalStudents</h4>
+                        <small class="text-muted">Sinh viên</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h4 class="text-success">@Model.TotalSessions</h4>
+                        <small class="text-muted">Buổi học</small>
+                    </div>
+                    <div class="col-12">
+                        <h4 class="text-info">@Model.OverallAttendanceRate.ToString("F1")%</h4>
+                        <small class="text-muted">Tỷ lệ điểm danh</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs Navigation -->
+<ul class="nav nav-tabs" id="classDetailsTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="sessions-tab" data-bs-toggle="tab" data-bs-target="#sessions" type="button" role="tab">
+            <i class="fas fa-calendar-alt"></i> Buổi học (@Model.AttendanceSessions.Count)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button" role="tab">
+            <i class="fas fa-users"></i> Sinh viên (@Model.TotalStudents)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="grades-tab" data-bs-toggle="tab" data-bs-target="#grades" type="button" role="tab">
+            <i class="fas fa-star"></i> Điểm số
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="exams-tab" data-bs-toggle="tab" data-bs-target="#exams" type="button" role="tab">
+            <i class="fas fa-file-alt"></i> Bài kiểm tra
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="classDetailsTabContent">
+    <!-- Sessions Tab -->
+    <div class="tab-pane fade show active" id="sessions" role="tabpanel">
+        <div class="card border-top-0">
+            <div class="card-header">
+                <h5><i class="fas fa-calendar-alt"></i> Danh sách buổi học</h5>
+            </div>
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-calendar-alt"></i> Danh sách buổi học (@Model.AttendanceSessions.Count)</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.AttendanceSessions.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tiêu đề</th>
+                                    <th>Ngày học</th>
+                                    <th>Thời gian</th>
+                                    <th>Phòng</th>
+                                    <th>Điểm danh</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var session in Model.AttendanceSessions)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@session.SessionTitle</strong>
+                                            @if (!string.IsNullOrEmpty(session.Description))
+                                            {
+                                                <br><small class="text-muted">@session.Description</small>
+                                            }
+                                        </td>
+                                        <td>@session.SessionDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @session.StartTime.ToString(@"hh\:mm") - @session.EndTime.ToString(@"hh\:mm")
+                                        </td>
+                                        <td>@session.Location</td>
+                                        <td>
+                                            @if (session.IsCompleted)
+                                            {
+                                                <span class="badge bg-success">
+                                                    @session.GetPresentStudents()/@session.GetTotalStudents()
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">Chưa điểm danh</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("TakeAttendance", new { sessionId = session.Id })"
+                                               class="btn btn-sm btn-primary">
+                                                <i class="fas fa-check"></i> Điểm danh
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-plus fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">Chưa có buổi học nào</p>
+                        <a href="@Url.Action("CreateAttendanceSession", new { classId = Model.Class.Id })" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Tạo buổi học đầu tiên
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- Students Tab -->
+    <div class="tab-pane fade" id="students" role="tabpanel">
+        <div class="card border-top-0">
+            <div class="card-header">
+                <h5><i class="fas fa-users"></i> Danh sách sinh viên (@Model.Students.Count)</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Students.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Mã SV</th>
+                                    <th>Họ tên</th>
+                                    <th>Email</th>
+                                    <th>Tỷ lệ điểm danh</th>
+                                    <th>Ngày tham gia</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var student in Model.Students)
+                                {
+                                    <tr>
+                                        <td><strong>@student.Student.StudentId</strong></td>
+                                        <td>@student.Student.FullName</td>
+                                        <td>@student.Student.Email</td>
+                                        <td>
+                                            @{
+                                                var studentAttendances = Model.AttendanceSessions
+                                                    .SelectMany(ats => ats.Attendances)
+                                                    .Where(a => a.StudentUserId == student.StudentUserId);
+                                                var presentCount = studentAttendances.Count(a => a.IsPresent);
+                                                var totalCount = Model.AttendanceSessions.Count;
+                                                var rate = totalCount > 0 ? (decimal)presentCount / totalCount * 100 : 0;
+                                                var badgeClass = rate >= 80 ? "bg-success" : rate >= 60 ? "bg-warning" : "bg-danger";
+                                            }
+                                            <span class="badge @badgeClass">@rate.ToString("F0")%</span>
+                                        </td>
+                                        <td>@student.EnrolledAt.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @if (student.IsActive)
+                                            {
+                                                <span class="badge bg-success">Hoạt động</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Ngừng học</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-user-slash fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">Chưa có sinh viên nào trong lớp</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Grades Tab -->
+    <div class="tab-pane fade" id="grades" role="tabpanel">
+        <div class="card border-top-0">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-star"></i> Quản lý điểm số</h5>
+                <a href="@Url.Action("StudentGrades", new { classId = Model.Class.Id })" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Nhập điểm
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-4">
+                    <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Quản lý điểm số học kỳ</h5>
+                    <p class="text-muted">Nhập và quản lý điểm danh, điểm giữa kỳ, điểm cuối kỳ cho sinh viên</p>
+                    <a href="@Url.Action("StudentGrades", new { classId = Model.Class.Id })" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Bắt đầu nhập điểm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exams Tab -->
+    <div class="tab-pane fade" id="exams" role="tabpanel">
+        <div class="card border-top-0">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-file-alt"></i> Bài kiểm tra</h5>
+                <a href="@Url.Action("CreateSchedule", new { classId = Model.Class.Id })" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Tạo lịch thi
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-4">
+                    <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Bài kiểm tra cho lớp học</h5>
+                    <p class="text-muted">Tạo và quản lý các bài kiểm tra, lịch thi cho lớp học này</p>
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="@Url.Action("CreateExam")" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Tạo bài kiểm tra
+                        </a>
+                        <a href="@Url.Action("CreateSchedule", new { classId = Model.Class.Id })" class="btn btn-success">
+                            <i class="fas fa-calendar-plus"></i> Tạo lịch thi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto refresh attendance status every 30 seconds
+        setInterval(function() {
+            location.reload();
+        }, 30000);
+    </script>
+}
