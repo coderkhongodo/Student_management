@@ -630,6 +630,35 @@ html {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
+/* Clickable card styles */
+a .stat-card-simple {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+a .stat-card-simple:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+a .stat-card-simple:active {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Preserve text colors in clickable cards */
+a .stat-card-simple .stat-number,
+a .stat-card-simple .stat-label,
+a .stat-card-simple .stat-icon {
+    color: inherit;
+}
+
+a:hover .stat-card-simple .stat-number,
+a:hover .stat-card-simple .stat-label,
+a:hover .stat-card-simple .stat-icon {
+    color: inherit;
+}
+
 .stat-card-header {
     height: 4px;
     width: 100%;
@@ -686,11 +715,16 @@ html {
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(108, 117, 125, 0.05);
 }
 
 .stat-card-simple .stat-link:hover {
     color: #495057;
+    background: rgba(108, 117, 125, 0.1);
+    transform: translateX(2px);
 }
 
 .stat-card-simple .stat-warning {

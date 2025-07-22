@@ -38,7 +38,6 @@ namespace StudentManagementSystem.Controllers
                 .Include(c => c.AttendanceSessions)
                 .ToListAsync();
 
-            var totalStudents = myClasses.Sum(c => c.ClassStudents.Count(cs => cs.IsActive));
             var totalSessions = myClasses.Sum(c => c.AttendanceSessions.Count);
 
             var stats = new TeacherDashboardViewModel
@@ -54,7 +53,6 @@ namespace StudentManagementSystem.Controllers
             };
 
             ViewBag.TotalClasses = myClasses.Count;
-            ViewBag.TotalStudents = totalStudents;
             ViewBag.TotalSessions = totalSessions;
             ViewBag.MyClasses = myClasses;
 
@@ -397,6 +395,71 @@ namespace StudentManagementSystem.Controllers
             return View(model);
         }
 
+        // CRUD Operations for Session Management
+        public async Task<IActionResult> Sessions(int? classId, DateTime? fromDate, DateTime? toDate, string searchTerm = "")
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var teacherClasses = await _context.Classes
+                .Where(c => c.TeacherUserId == currentUser!.Id && c.IsActive)
+                .Include(c => c.ClassSubjects)
+                    .ThenInclude(cs => cs.Subject)
+                .OrderBy(c => c.ClassName)
+                .ToListAsync();
+
+            var sessionsQuery = _context.AttendanceSessions
+                .Include(s => s.Class)
+                    .ThenInclude(c => c.ClassSubjects)
+                        .ThenInclude(cs => cs.Subject)
+                .Include(s => s.Attendances)
+                .Where(s => s.Class.TeacherUserId == currentUser!.Id);
+
+            // Apply filters
+            if (classId.HasValue)
+            {
+                sessionsQuery = sessionsQuery.Where(s => s.ClassId == classId.Value);
+            }
+
+            if (fromDate.HasValue)
+            {
+                sessionsQuery = sessionsQuery.Where(s => s.SessionDate >= fromDate.Value);
+            }
+
+            if (toDate.HasValue)
+            {
+                sessionsQuery = sessionsQuery.Where(s => s.SessionDate <= toDate.Value);
+            }
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                sessionsQuery = sessionsQuery.Where(s =>
+                    s.SessionTitle.Contains(searchTerm) ||
+                    s.Description.Contains(searchTerm) ||
+                    s.Location.Contains(searchTerm));
+            }
+
+            var sessions = await sessionsQuery
+                .OrderByDescending(s => s.SessionDate)
+                .ThenByDescending(s => s.StartTime)
+                .ToListAsync();
+
+            var model = new SessionListViewModel
+            {
+                Sessions = sessions,
+                TeacherClasses = teacherClasses,
+                SelectedClassId = classId,
+                FromDate = fromDate,
+                ToDate = toDate,
+                SearchTerm = searchTerm,
+                TotalSessions = sessions.Count,
+                CompletedSessions = sessions.Count(s => s.IsCompleted),
+                PendingSessions = sessions.Count(s => !s.IsCompleted),
+                SelectedClass = classId.HasValue ? teacherClasses.FirstOrDefault(c => c.Id == classId.Value) : null
+            };
+
+            return View(model);
+        }
+
         [HttpGet]
         public async Task<IActionResult> CreateAttendanceSession(int classId)
         {
@@ -435,6 +498,7 @@ namespace StudentManagementSystem.Controllers
 
                 var classEntity = await _context.Classes
                     .Where(c => c.Id == model.ClassId && c.TeacherUserId == currentUser!.Id)
+                    .Include(c => c.ClassStudents)
                     .FirstOrDefaultAsync();
 
                 if (classEntity == null)
@@ -442,7 +506,19 @@ namespace StudentManagementSystem.Controllers
                     return NotFound();
                 }
 
-                var session = new AttendanceSession
+                // Business Logic Validation
+                var validationErrors = await ValidateSessionAsync(model, currentUser!.Id);
+                if (validationErrors.Any())
+                {
+                    foreach (var error in validationErrors)
+                    {
+                        ModelState.AddModelError("", error);
+                    }
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var session = new AttendanceSession
                 {
                     ClassId = model.ClassId,
                     SessionTitle = model.SessionTitle,
@@ -454,11 +530,12 @@ namespace StudentManagementSystem.Controllers
                     CreatedByUserId = currentUser!.Id
                 };
 
-                _context.AttendanceSessions.Add(session);
-                await _context.SaveChangesAsync();
+                    _context.AttendanceSessions.Add(session);
+                    await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Buổi học đã được tạo thành công!";
-                return RedirectToAction(nameof(ClassDetails), new { id = model.ClassId });
+                    TempData["Success"] = "Buổi học đã được tạo thành công!";
+                    return RedirectToAction(nameof(Sessions));
+                }
             }
 
             var classForView = await _context.Classes
@@ -468,6 +545,126 @@ namespace StudentManagementSystem.Controllers
             ViewBag.Class = classForView;
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditAttendanceSession(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var session = await _context.AttendanceSessions
+                .Include(s => s.Class)
+                    .ThenInclude(c => c.ClassSubjects)
+                        .ThenInclude(cs => cs.Subject)
+                .Where(s => s.Id == id && s.Class.TeacherUserId == currentUser!.Id)
+                .FirstOrDefaultAsync();
+
+            if (session == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditAttendanceSessionViewModel
+            {
+                Id = session.Id,
+                ClassId = session.ClassId,
+                SessionTitle = session.SessionTitle,
+                Description = session.Description,
+                SessionDate = session.SessionDate,
+                StartTime = session.StartTime,
+                EndTime = session.EndTime,
+                Location = session.Location,
+                IsCompleted = session.IsCompleted,
+                ClassName = session.Class.ClassName
+            };
+
+            ViewBag.Class = session.Class;
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAttendanceSession(EditAttendanceSessionViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                var session = await _context.AttendanceSessions
+                    .Include(s => s.Class)
+                    .Where(s => s.Id == model.Id && s.Class.TeacherUserId == currentUser!.Id)
+                    .FirstOrDefaultAsync();
+
+                if (session == null)
+                {
+                    return NotFound();
+                }
+
+                // Business Logic Validation for Edit
+                var validationErrors = await ValidateSessionAsync(model, currentUser!.Id, model.Id);
+                if (validationErrors.Any())
+                {
+                    foreach (var error in validationErrors)
+                    {
+                        ModelState.AddModelError("", error);
+                    }
+                }
+
+                if (ModelState.IsValid)
+                {
+                    session.SessionTitle = model.SessionTitle;
+                    session.Description = model.Description;
+                    session.SessionDate = model.SessionDate;
+                    session.StartTime = model.StartTime;
+                    session.EndTime = model.EndTime;
+                    session.Location = model.Location;
+                    session.UpdatedAt = DateTime.Now;
+
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Buổi học đã được cập nhật thành công!";
+                    return RedirectToAction(nameof(Sessions));
+                }
+            }
+
+            var classForView = await _context.Classes
+                .Include(c => c.ClassSubjects)
+                    .ThenInclude(cs => cs.Subject)
+                .FirstOrDefaultAsync(c => c.Id == model.ClassId);
+
+            ViewBag.Class = classForView;
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAttendanceSession(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var session = await _context.AttendanceSessions
+                .Include(s => s.Class)
+                .Include(s => s.Attendances)
+                .Where(s => s.Id == id && s.Class.TeacherUserId == currentUser!.Id)
+                .FirstOrDefaultAsync();
+
+            if (session == null)
+            {
+                return NotFound();
+            }
+
+            // Check if session has attendance records
+            if (session.Attendances.Any())
+            {
+                TempData["Error"] = "Không thể xóa buổi học đã có dữ liệu điểm danh!";
+                return RedirectToAction(nameof(Sessions));
+            }
+
+            _context.AttendanceSessions.Remove(session);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Buổi học đã được xóa thành công!";
+            return RedirectToAction(nameof(Sessions));
         }
 
         [HttpGet]
@@ -834,6 +1031,118 @@ namespace StudentManagementSystem.Controllers
                 ViewBag.Subjects = subjects;
                 return View("AllStudentGrades", grades);
             }
+        }
+
+        // Private helper methods for session validation
+        private async Task<List<string>> ValidateSessionAsync(CreateAttendanceSessionViewModel model, string teacherUserId)
+        {
+            return await ValidateSessionInternalAsync(
+                model.ClassId,
+                model.SessionDate,
+                model.StartTime,
+                model.EndTime,
+                model.Location,
+                teacherUserId,
+                null);
+        }
+
+        private async Task<List<string>> ValidateSessionAsync(EditAttendanceSessionViewModel model, string teacherUserId, int excludeSessionId)
+        {
+            return await ValidateSessionInternalAsync(
+                model.ClassId,
+                model.SessionDate,
+                model.StartTime,
+                model.EndTime,
+                model.Location,
+                teacherUserId,
+                excludeSessionId);
+        }
+
+        private async Task<List<string>> ValidateSessionInternalAsync(
+            int classId,
+            DateTime sessionDate,
+            TimeSpan startTime,
+            TimeSpan endTime,
+            string location,
+            string teacherUserId,
+            int? excludeSessionId = null)
+        {
+            var errors = new List<string>();
+
+            // Basic time validation
+            if (endTime <= startTime)
+            {
+                errors.Add("Giờ kết thúc phải sau giờ bắt đầu.");
+            }
+
+            // Cannot schedule sessions in the past
+            var sessionDateTime = sessionDate.Date.Add(startTime);
+            if (sessionDateTime < DateTime.Now)
+            {
+                errors.Add("Không thể tạo buổi học trong quá khứ.");
+            }
+
+            // Check for time conflicts in the same classroom
+            if (!string.IsNullOrEmpty(location))
+            {
+                var conflictingSession = await _context.AttendanceSessions
+                    .Where(s => s.Location.ToLower() == location.ToLower() &&
+                               s.SessionDate.Date == sessionDate.Date &&
+                               ((s.StartTime < endTime && s.EndTime > startTime)) &&
+                               (excludeSessionId == null || s.Id != excludeSessionId))
+                    .FirstOrDefaultAsync();
+
+                if (conflictingSession != null)
+                {
+                    errors.Add($"Phòng học '{location}' đã được sử dụng trong khung giờ này.");
+                }
+            }
+
+            // Check for teacher schedule conflicts
+            var teacherConflict = await _context.AttendanceSessions
+                .Include(s => s.Class)
+                .Where(s => s.Class.TeacherUserId == teacherUserId &&
+                           s.SessionDate.Date == sessionDate.Date &&
+                           ((s.StartTime < endTime && s.EndTime > startTime)) &&
+                           (excludeSessionId == null || s.Id != excludeSessionId))
+                .FirstOrDefaultAsync();
+
+            if (teacherConflict != null)
+            {
+                errors.Add("Bạn đã có buổi học khác trong khung giờ này.");
+            }
+
+            // Check for student schedule conflicts (students enrolled in multiple classes)
+            var classStudents = await _context.ClassStudents
+                .Where(cs => cs.ClassId == classId && cs.IsActive)
+                .Select(cs => cs.StudentUserId)
+                .ToListAsync();
+
+            if (classStudents.Any())
+            {
+                var studentConflicts = await _context.AttendanceSessions
+                    .Include(s => s.Class)
+                        .ThenInclude(c => c.ClassStudents)
+                    .Where(s => s.SessionDate.Date == sessionDate.Date &&
+                               ((s.StartTime < endTime && s.EndTime > startTime)) &&
+                               (excludeSessionId == null || s.Id != excludeSessionId) &&
+                               s.Class.ClassStudents.Any(cs => cs.IsActive && classStudents.Contains(cs.StudentUserId)))
+                    .ToListAsync();
+
+                if (studentConflicts.Any())
+                {
+                    var conflictingStudentCount = studentConflicts
+                        .SelectMany(s => s.Class.ClassStudents)
+                        .Where(cs => cs.IsActive && classStudents.Contains(cs.StudentUserId))
+                        .Select(cs => cs.StudentUserId)
+                        .Distinct()
+                        .Count();
+
+                    errors.Add($"Có {conflictingStudentCount} sinh viên đã có lịch học khác trong khung giờ này.");
+                }
+            }
+
+            return errors;
         }
     }
 }

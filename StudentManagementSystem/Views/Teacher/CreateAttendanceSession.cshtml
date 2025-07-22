@@ -4,14 +4,120 @@
     var classEntity = ViewBag.Class as StudentManagementSystem.Models.Class;
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h4><i class="fas fa-plus"></i> Tạo buổi học mới</h4>
-                <p class="mb-0">Lớp: @classEntity?.ClassName - @(classEntity?.ClassSubjects?.FirstOrDefault()?.Subject?.SubjectName ?? "Chưa có môn học")</p>
+@section Styles {
+    <link href="~/css/student-ui.css" rel="stylesheet" />
+    <link href="~/css/teacher-ui.css" rel="stylesheet" />
+    <style>
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(168, 230, 207, 0.3);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);
+            color: #2d5016;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2d5016;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #81c784;
+            box-shadow: 0 0 0 0.2rem rgba(129, 199, 132, 0.25);
+        }
+
+        .btn-custom {
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+        }
+
+        .validation-summary {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .class-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+}
+
+<!-- Welcome Header -->
+<div class="welcome-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-2 fw-bold">
+                <i class="fas fa-plus me-2"></i>
+                Tạo buổi học mới
+            </h2>
+            <p class="mb-0 opacity-75">Thêm buổi học mới cho lớp của bạn</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Sessions")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Class Info -->
+@if (classEntity != null)
+{
+    <div class="class-info">
+        <div class="row">
+            <div class="col-md-8">
+                <h6 class="fw-bold text-primary">Thông tin lớp học</h6>
+                <p class="mb-1"><strong>Lớp:</strong> @classEntity.ClassName</p>
+                <p class="mb-1"><strong>Môn học:</strong> @(classEntity.ClassSubjects?.FirstOrDefault()?.Subject?.SubjectName ?? "Chưa có môn học")</p>
+                <p class="mb-0"><strong>Số sinh viên:</strong> @classEntity.CurrentStudentCount/@classEntity.MaxStudents</p>
             </div>
-            <div class="card-body">
+            <div class="col-md-4">
+                <h6 class="fw-bold text-info">Lưu ý</h6>
+                <ul class="small mb-0">
+                    <li>Giờ kết thúc phải sau giờ bắt đầu</li>
+                    <li>Không thể tạo buổi học trong quá khứ</li>
+                    <li>Kiểm tra xung đột lịch học</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Form -->
+<div class="form-card">
                 <form asp-action="CreateAttendanceSession" method="post">
                     <input asp-for="ClassId" type="hidden" />
                     <div asp-validation-summary="All" class="text-danger mb-3"></div>
@@ -64,52 +170,46 @@
                     </div>
                     
                     <div class="d-flex justify-content-between">
-                        <a href="@Url.Action("ClassDetails", new { id = Model.ClassId })" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Quay lại
+                        <a href="@Url.Action("Sessions")" class="btn btn-outline-secondary btn-custom">
+                            <i class="fas fa-times me-2"></i>Hủy
                         </a>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Tạo buổi học
+                        <button type="submit" class="btn btn-success btn-custom">
+                            <i class="fas fa-save me-2"></i>Tạo buổi học
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+
     <script>
-        // Set default times based on current time
-        document.addEventListener('DOMContentLoaded', function() {
-            var now = new Date();
-            var startTime = document.getElementById('StartTime');
-            var endTime = document.getElementById('EndTime');
-            
-            if (!startTime.value) {
-                var start = new Date(now);
-                start.setMinutes(0, 0, 0); // Round to nearest hour
-                startTime.value = start.toTimeString().slice(0, 5);
-            }
-            
-            if (!endTime.value) {
-                var end = new Date(now);
-                end.setHours(end.getHours() + 2); // 2 hours later
-                end.setMinutes(0, 0, 0);
-                endTime.value = end.toTimeString().slice(0, 5);
-            }
-        });
-        
-        // Validate end time is after start time
-        document.getElementById('EndTime').addEventListener('change', function() {
-            var startTime = document.getElementById('StartTime').value;
-            var endTime = this.value;
-            
-            if (startTime && endTime && endTime <= startTime) {
-                alert('Giờ kết thúc phải sau giờ bắt đầu!');
-                this.focus();
-            }
+        $(document).ready(function() {
+            // Auto-focus on first input
+            $('#SessionTitle').focus();
+
+            // Validate time inputs
+            $('#StartTime, #EndTime').on('change', function() {
+                var startTime = $('#StartTime').val();
+                var endTime = $('#EndTime').val();
+
+                if (startTime && endTime && startTime >= endTime) {
+                    alert('Giờ kết thúc phải sau giờ bắt đầu!');
+                    $(this).focus();
+                }
+            });
+
+            // Validate date input
+            $('#SessionDate').on('change', function() {
+                var selectedDate = new Date($(this).val());
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (selectedDate < today) {
+                    alert('Không thể chọn ngày trong quá khứ!');
+                    $(this).focus();
+                }
+            });
         });
     </script>
 }

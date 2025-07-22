@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="stylesheet" href="~/css/student-ui.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <header>
@@ -57,6 +58,7 @@
                                         <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Index"><i class="fas fa-tachometer-alt"></i> Bảng điều khiển</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" asp-controller="Teacher" asp-action="MyClasses"><i class="fas fa-school"></i> Lớp học của tôi</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Sessions"><i class="fas fa-calendar-alt"></i> Quản lý buổi học</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Exams"><i class="fas fa-file-alt"></i> Bài kiểm tra</a></li>
                                         <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Schedules"><i class="fas fa-calendar"></i> Lịch thi</a></li>

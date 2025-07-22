@@ -1,0 +1,659 @@
+/* Teacher Dashboard UI Styles */
+/* Theme: Professional Green (#28a745, #20c997, #6f42c1) */
+
+/* Welcome Header for Teacher */
+.teacher-welcome-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+}
+
+.teacher-welcome-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.teacher-welcome-header::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(180deg);
+    }
+}
+
+/* Teacher Statistics Cards */
+.teacher-stat-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+}
+
+.teacher-stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.teacher-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--card-color), var(--card-color-light));
+}
+
+.teacher-stat-card.card-primary {
+    --card-color: #007bff;
+    --card-color-light: #66b3ff;
+}
+
+.teacher-stat-card.card-success {
+    --card-color: #28a745;
+    --card-color-light: #71dd8a;
+}
+
+.teacher-stat-card.card-info {
+    --card-color: #17a2b8;
+    --card-color-light: #6edff6;
+}
+
+.teacher-stat-card.card-warning {
+    --card-color: #ffc107;
+    --card-color-light: #ffda6a;
+}
+
+.teacher-stat-card.card-danger {
+    --card-color: #dc3545;
+    --card-color-light: #f1959b;
+}
+
+.teacher-stat-card .card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+}
+
+.teacher-stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--card-color), var(--card-color-light));
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.teacher-stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    background: linear-gradient(135deg, var(--card-color), var(--card-color-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.teacher-stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.teacher-stat-link {
+    color: var(--card-color);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.teacher-stat-link:hover {
+    background: var(--card-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Teacher Action Cards */
+.teacher-action-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.teacher-action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.teacher-action-card .card-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.teacher-action-card .card-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+}
+
+.teacher-action-card .card-body {
+    padding: 2rem;
+}
+
+.teacher-action-btn {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    border: 2px solid #e9ecef;
+    color: #495057;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.teacher-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.teacher-action-btn:hover::before {
+    left: 100%;
+}
+
+.teacher-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.teacher-action-btn.btn-primary-gradient {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-color: #007bff;
+    color: white;
+}
+
+.teacher-action-btn.btn-success-gradient {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    border-color: #28a745;
+    color: white;
+}
+
+.teacher-action-btn.btn-warning-gradient {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    border-color: #ffc107;
+    color: #212529;
+}
+
+.teacher-action-btn.btn-info-gradient {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    border-color: #17a2b8;
+    color: white;
+}
+
+/* Badge for pending items */
+.teacher-badge {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .teacher-stat-card {
+        height: 150px;
+    }
+
+    .teacher-stat-number {
+        font-size: 2rem;
+    }
+
+    .teacher-stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .teacher-welcome-header {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .teacher-stat-card {
+        height: 140px;
+        margin-bottom: 1rem;
+    }
+
+    .teacher-stat-card .card-body {
+        padding: 1rem;
+    }
+
+    .teacher-stat-number {
+        font-size: 1.75rem;
+    }
+
+    .teacher-stat-label {
+        font-size: 0.75rem;
+    }
+
+    .teacher-stat-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+        margin-bottom: 0.75rem;
+    }
+
+    .teacher-action-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .teacher-action-btn {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .teacher-stat-card {
+        height: 130px;
+    }
+
+    .teacher-stat-number {
+        font-size: 1.5rem;
+    }
+
+    .teacher-stat-label {
+        font-size: 0.7rem;
+    }
+
+    .teacher-action-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Quick Stats Widget */
+.teacher-quick-stats {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.teacher-quick-stats h6 {
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.teacher-quick-stat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.teacher-quick-stat-item:last-child {
+    border-bottom: none;
+}
+
+.teacher-quick-stat-label {
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.teacher-quick-stat-value {
+    font-weight: 700;
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+/* Progress Indicators */
+.teacher-progress-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+}
+
+.teacher-progress-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.teacher-progress-bar {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.teacher-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745, #20c997);
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+.teacher-progress-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Notification Badge */
+.teacher-notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+}
+
+/* Enhanced Hover Effects */
+.teacher-stat-card:hover .teacher-stat-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.teacher-stat-card:hover .teacher-stat-number {
+    transform: scale(1.05);
+}
+
+.teacher-action-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading States */
+.teacher-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(40, 167, 69, 0.3);
+    border-radius: 50%;
+    border-top-color: #28a745;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Success States */
+.teacher-success-message {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid #28a745;
+    margin-bottom: 1rem;
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animation Classes */
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Gradient Text Effects */
+.teacher-gradient-text {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+/* Glass Effect */
+.teacher-glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design for Teacher Dashboard */
+@media (max-width: 768px) {
+    .teacher-welcome-header {
+        padding: 1.5rem !important;
+        text-align: center;
+    }
+
+    .teacher-welcome-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .teacher-stat-card {
+        min-height: 180px !important;
+    }
+
+    .teacher-stat-number {
+        font-size: 2.5rem !important;
+    }
+
+    .teacher-stat-icon {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 1.5rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .teacher-welcome-header {
+        padding: 1rem !important;
+    }
+
+    .teacher-stat-card {
+        min-height: 160px !important;
+    }
+
+    .teacher-stat-number {
+        font-size: 2rem !important;
+    }
+
+    .teacher-stat-icon {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.3rem !important;
+    }
+
+    .teacher-stat-label {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* Light Green Color Palette Override */
+.teacher-welcome-header {
+    background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 50%, #81c784 100%) !important;
+    color: #2d5016 !important;
+}
+
+.card-primary {
+    background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%) !important;
+    color: #2d5016 !important;
+}
+
+.card-success {
+    background: linear-gradient(135deg, #81c784 0%, #a8e6cf 100%) !important;
+    color: #1b5e20 !important;
+}
+
+.card-info {
+    background: linear-gradient(135deg, #7fcdcd 0%, #81c784 100%) !important;
+    color: #004d40 !important;
+}
+
+.card-warning {
+    background: linear-gradient(135deg, #a8e6cf 20%, #7fcdcd 80%) !important;
+    color: #2e7d32 !important;
+}
+
+.card-danger {
+    background: linear-gradient(135deg, #81c784 0%, #7fcdcd 100%) !important;
+    color: #1b5e20 !important;
+}

@@ -35,6 +35,56 @@ namespace StudentManagementSystem.ViewModels
         public string Location { get; set; } = string.Empty;
     }
 
+    public class EditAttendanceSessionViewModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Lớp học là bắt buộc")]
+        public int ClassId { get; set; }
+
+        [Required(ErrorMessage = "Tiêu đề buổi học là bắt buộc")]
+        [StringLength(200, ErrorMessage = "Tiêu đề không được vượt quá 200 ký tự")]
+        [Display(Name = "Tiêu đề buổi học")]
+        public string SessionTitle { get; set; } = string.Empty;
+
+        [StringLength(1000, ErrorMessage = "Mô tả không được vượt quá 1000 ký tự")]
+        [Display(Name = "Mô tả nội dung")]
+        public string Description { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Ngày học là bắt buộc")]
+        [Display(Name = "Ngày học")]
+        public DateTime SessionDate { get; set; }
+
+        [Required(ErrorMessage = "Giờ bắt đầu là bắt buộc")]
+        [Display(Name = "Giờ bắt đầu")]
+        public TimeSpan StartTime { get; set; }
+
+        [Required(ErrorMessage = "Giờ kết thúc là bắt buộc")]
+        [Display(Name = "Giờ kết thúc")]
+        public TimeSpan EndTime { get; set; }
+
+        [StringLength(100, ErrorMessage = "Phòng học không được vượt quá 100 ký tự")]
+        [Display(Name = "Phòng học")]
+        public string Location { get; set; } = string.Empty;
+
+        public bool IsCompleted { get; set; }
+        public string ClassName { get; set; } = string.Empty;
+    }
+
+    public class SessionListViewModel
+    {
+        public List<AttendanceSession> Sessions { get; set; } = new List<AttendanceSession>();
+        public Class? SelectedClass { get; set; }
+        public List<Class> TeacherClasses { get; set; } = new List<Class>();
+        public int? SelectedClassId { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public string SearchTerm { get; set; } = string.Empty;
+        public int TotalSessions { get; set; }
+        public int CompletedSessions { get; set; }
+        public int PendingSessions { get; set; }
+    }
+
     public class TakeAttendanceViewModel
     {
         public AttendanceSession Session { get; set; } = null!;

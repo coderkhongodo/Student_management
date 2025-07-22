@@ -1,0 +1,567 @@
+@model StudentManagementSystem.ViewModels.SessionListViewModel
+@{
+    ViewData["Title"] = "Quản lý Buổi học";
+}
+
+@section Styles {
+    <link href="~/css/student-ui.css" rel="stylesheet" />
+    <link href="~/css/teacher-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+    <style>
+        .session-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(168, 230, 207, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .session-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(168, 230, 207, 0.25);
+        }
+
+        .session-header {
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 50%, #81c784 100%);
+            color: #1b5e20;
+            padding: 1.25rem;
+            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .session-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .session-status {
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .session-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .info-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .info-icon.date {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1976d2;
+        }
+
+        .info-icon.time {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            color: #7b1fa2;
+        }
+
+        .info-icon.location {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+        }
+
+        .info-icon.students {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            color: #2e7d32;
+        }
+
+        .session-description {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            border-left: 4px solid #81c784;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #fafafa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn-action-group {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .btn-action {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn-action:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .attendance-stats {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .attendance-badge {
+            background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Mobile Responsive */
+        @@media (max-width: 768px) {
+            .session-info-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .session-header {
+                padding: 1rem;
+            }
+
+            .session-header h5 {
+                font-size: 1.1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .btn-action-group {
+                justify-content: center;
+            }
+
+            .attendance-stats {
+                text-align: center;
+                justify-content: center;
+            }
+
+            .info-item {
+                padding: 0.5rem;
+            }
+
+            .info-icon {
+                width: 30px;
+                height: 30px;
+                margin-right: 0.5rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .session-card {
+                margin-bottom: 1rem;
+            }
+
+            .session-header {
+                padding: 0.75rem;
+            }
+
+            .session-status {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .btn-action {
+                width: 35px;
+                height: 35px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        .filter-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #81c784 0%, #a8e6cf 100%);
+            color: #1b5e20;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-action {
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin: 0 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+}
+
+<!-- Welcome Header -->
+<div class="welcome-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="mb-2 fw-bold">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Quản lý Buổi học
+            </h2>
+            <p class="mb-0 opacity-75">Tạo, chỉnh sửa và quản lý các buổi học của bạn</p>
+        </div>
+        <div>
+            <a href="@Url.Action("CreateAttendanceSession", new { classId = Model.SelectedClassId ?? 0 })" 
+               class="btn btn-success btn-lg">
+                <i class="fas fa-plus me-2"></i>Tạo buổi học mới
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="stats-card">
+            <h3 class="mb-1">@Model.TotalSessions</h3>
+            <p class="mb-0">Tổng buổi học</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-card">
+            <h3 class="mb-1">@Model.CompletedSessions</h3>
+            <p class="mb-0">Đã hoàn thành</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-card">
+            <h3 class="mb-1">@Model.PendingSessions</h3>
+            <p class="mb-0">Chưa hoàn thành</p>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-card">
+    <form method="get" asp-action="Sessions">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Lớp học</label>
+                <select name="classId" class="form-select">
+                    <option value="">Tất cả lớp học</option>
+                    @foreach (var cls in Model.TeacherClasses)
+                    {
+                        <option value="@cls.Id" selected="@(cls.Id == Model.SelectedClassId)">
+                            @cls.ClassName
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Từ ngày</label>
+                <input type="date" name="fromDate" class="form-control" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Đến ngày</label>
+                <input type="date" name="toDate" class="form-control" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Tìm kiếm</label>
+                <input type="text" name="searchTerm" class="form-control" placeholder="Tiêu đề, mô tả, phòng học..." value="@Model.SearchTerm" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>Lọc
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Sessions List -->
+@if (Model.Sessions.Any())
+{
+    <div class="row">
+        @foreach (var session in Model.Sessions)
+        {
+            <div class="col-12 col-md-6 col-lg-4 col-xl-4 mb-4">
+                <div class="session-card">
+                    <!-- Header with gradient background -->
+                    <div class="session-header">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1 fw-bold">@session.SessionTitle</h5>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-graduation-cap me-1"></i>
+                                    <small class="fw-semibold">@session.Class.ClassName</small>
+                                </div>
+                            </div>
+                            <span class="session-status @(session.IsCompleted ? "status-completed" : "status-pending")">
+                                @(session.IsCompleted ? "Hoàn thành" : "Chưa hoàn thành")
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Session Info Grid -->
+                    <div class="p-3">
+                        <div class="session-info-grid">
+                            <div class="info-item">
+                                <div class="info-icon date">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">@session.SessionDate.ToString("dd/MM/yyyy")</div>
+                                    <small class="text-muted">@session.SessionDate.ToString("dddd")</small>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon time">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">@session.StartTime.ToString(@"hh\:mm") - @session.EndTime.ToString(@"hh\:mm")</div>
+                                    <small class="text-muted">@((session.EndTime - session.StartTime).TotalMinutes) phút</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(session.Location))
+                        {
+                            <div class="info-item mb-3">
+                                <div class="info-icon location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">@session.Location</div>
+                                    <small class="text-muted">Phòng học</small>
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(session.Description))
+                        {
+                            <div class="session-description">
+                                <i class="fas fa-quote-left me-2 text-muted"></i>
+                                @session.Description
+                            </div>
+                        }
+
+                        <!-- Attendance Stats -->
+                        <div class="info-item mb-3">
+                            <div class="info-icon students">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-semibold">Điểm danh</div>
+                                        <small class="text-muted">@session.Attendances.Count(a => a.IsPresent)/@session.Class.ClassStudents.Count(cs => cs.IsActive) sinh viên</small>
+                                    </div>
+                                    @if (session.Attendances.Any())
+                                    {
+                                        <span class="attendance-badge">
+                                            @Math.Round((double)session.Attendances.Count(a => a.IsPresent) / session.Class.ClassStudents.Count(cs => cs.IsActive) * 100, 1)%
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <div class="btn-action-group">
+                            <a href="@Url.Action("EditAttendanceSession", new { id = session.Id })"
+                               class="btn btn-outline-primary btn-action"
+                               title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            @if (!session.IsCompleted)
+                            {
+                                <a href="@Url.Action("TakeAttendance", new { sessionId = session.Id })"
+                                   class="btn btn-outline-success btn-action"
+                                   title="Điểm danh">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("TakeAttendance", new { sessionId = session.Id })"
+                                   class="btn btn-outline-info btn-action"
+                                   title="Xem điểm danh">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            }
+                            @if (!session.Attendances.Any())
+                            {
+                                <button type="button" class="btn btn-outline-danger btn-action"
+                                        onclick="confirmDelete(@session.Id, '@session.SessionTitle')"
+                                        title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            }
+                        </div>
+
+                        <div class="attendance-stats">
+                            <i class="fas fa-chart-line me-1"></i>
+                            @if (session.IsCompleted)
+                            {
+                                <span class="text-success">Đã hoàn thành</span>
+                            }
+                            else if (session.SessionDate.Date < DateTime.Today)
+                            {
+                                <span class="text-warning">Quá hạn</span>
+                            }
+                            else if (session.SessionDate.Date == DateTime.Today)
+                            {
+                                <span class="text-primary">Hôm nay</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sắp tới</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">Không có buổi học nào</h5>
+        <p class="text-muted">Hãy tạo buổi học đầu tiên của bạn!</p>
+        <a href="@Url.Action("CreateAttendanceSession")" class="btn btn-success">
+            <i class="fas fa-plus me-2"></i>Tạo buổi học mới
+        </a>
+    </div>
+}
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa buổi học "<span id="sessionTitle"></span>"?</p>
+                <p class="text-danger small">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(sessionId, sessionTitle) {
+            document.getElementById('sessionTitle').textContent = sessionTitle;
+            document.getElementById('deleteForm').action = '@Url.Action("DeleteAttendanceSession")/' + sessionId;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+}

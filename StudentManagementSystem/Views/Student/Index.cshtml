@@ -89,78 +89,66 @@
 
     <!-- Available Exams Card -->
     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-        <div class="stat-card-simple stat-card-primary">
-            <div class="stat-card-header bg-primary"></div>
-            <div class="stat-card-body">
-                <div class="stat-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="stat-number">@Model.AvailableExams</div>
-                <div class="stat-label">BÀI THI CÓ SẴN</div>
-                <div class="stat-action">
-                    <a href="@Url.Action("AvailableExams")" class="stat-link">
-                        Xem chi tiết <i class="fas fa-arrow-right"></i>
-                    </a>
+        <a href="@Url.Action("AvailableExams")" class="text-decoration-none">
+            <div class="stat-card-simple stat-card-primary">
+                <div class="stat-card-header bg-primary"></div>
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-number">@Model.AvailableExams</div>
+                    <div class="stat-label">BÀI THI CÓ SẴN</div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- Completed Exams Card -->
     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-        <div class="stat-card-simple stat-card-success">
-            <div class="stat-card-header bg-success"></div>
-            <div class="stat-card-body">
-                <div class="stat-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-number">@Model.CompletedExams</div>
-                <div class="stat-label">ĐÃ HOÀN THÀNH</div>
-                <div class="stat-action">
-                    <a href="@Url.Action("MySubmissions")" class="stat-link">
-                        Xem chi tiết <i class="fas fa-arrow-right"></i>
-                    </a>
+        <a href="@Url.Action("MySubmissions")" class="text-decoration-none">
+            <div class="stat-card-simple stat-card-success">
+                <div class="stat-card-header bg-success"></div>
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-number">@Model.CompletedExams</div>
+                    <div class="stat-label">ĐÃ HOÀN THÀNH</div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- Pending Results Card -->
     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-        <div class="stat-card-simple stat-card-warning">
-            <div class="stat-card-header bg-warning"></div>
-            <div class="stat-card-body">
-                <div class="stat-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-number">@Model.PendingResults</div>
-                <div class="stat-label">CHỜ KẾT QUẢ</div>
-                <div class="stat-action">
-                    <a href="@Url.Action("MySubmissions")" class="stat-link">
-                        Xem chi tiết <i class="fas fa-arrow-right"></i>
-                    </a>
+        <a href="@Url.Action("MySubmissions")" class="text-decoration-none">
+            <div class="stat-card-simple stat-card-warning">
+                <div class="stat-card-header bg-warning"></div>
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-number">@Model.PendingResults</div>
+                    <div class="stat-label">CHỜ KẾT QUẢ</div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- GPA Card -->
     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-        <div class="stat-card-simple stat-card-info">
-            <div class="stat-card-header bg-info"></div>
-            <div class="stat-card-body">
-                <div class="stat-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="stat-number">@Model.GPA.ToString("F2")</div>
-                <div class="stat-label">GPA (THANG ĐIỂM 4)</div>
-                <div class="stat-action">
-                    <a href="@Url.Action("MyGrades")" class="stat-link">
-                        Xem chi tiết <i class="fas fa-arrow-right"></i>
-                    </a>
+        <a href="@Url.Action("MyGrades")" class="text-decoration-none">
+            <div class="stat-card-simple stat-card-info">
+                <div class="stat-card-header bg-info"></div>
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-number">@Model.GPA.ToString("F2")</div>
+                    <div class="stat-label">GPA (THANG ĐIỂM 4)</div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     </div>
 </div>
