@@ -3,121 +3,189 @@
     ViewData["Title"] = "Chấm điểm bài thi";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-star"></i> Chấm điểm bài thi</h2>
-    <div>
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
-            <i class="fas fa-filter"></i> Lọc
-        </button>
-        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#autoGradingModal">
-            <i class="fas fa-robot"></i> Tự động chấm điểm
-        </button>
-        <a href="@Url.Action("ExportGrades")" class="btn btn-outline-success">
-            <i class="fas fa-file-excel"></i> Xuất Excel
-        </a>
+@section Styles {
+    <link href="~/css/admin-ui.css" rel="stylesheet" />
+    <link href="~/css/teacher-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+}
+
+<div class="teacher-page-container">
+<!-- Welcome Header with Animation -->
+<div class="welcome-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="position-relative z-index-2">
+            <h2 class="mb-2 animate__animated animate__fadeInLeft fw-bold">
+                <i class="fas fa-star me-2"></i>
+                Chấm điểm bài thi ⭐
+            </h2>
+            <p class="mb-0 opacity-75">Chấm điểm và đánh giá bài làm của học sinh</p>
+        </div>
+        <div class="text-end position-relative z-index-2">
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-light rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                    <i class="fas fa-filter me-2"></i>Lọc
+                </button>
+                <button type="button" class="btn btn-outline-light rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#autoGradingModal">
+                    <i class="fas fa-robot me-2"></i>Tự động
+                </button>
+                <a href="@Url.Action("ExportGrades")" class="btn btn-light btn-lg px-4 py-2 rounded-pill shadow-sm">
+                    <i class="fas fa-file-excel me-2"></i>Xuất Excel
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="card">
+<div class="admin-action-card animate__animated animate__fadeInUp">
+    <div class="card-header">
+        <h5 class="mb-0 fw-bold">
+            <i class="fas fa-list me-2"></i> Danh sách bài nộp cần chấm điểm
+        </h5>
+    </div>
     <div class="card-body">
         @if (Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
+                <table class="table table-modern">
+                    <thead>
                         <tr>
                             <th>Học sinh</th>
-                            <th>Bài kiểm tra</th>
-                            <th>Thời gian nộp</th>
-                            <th>Câu trả lời</th>
-                            <th>File đính kèm</th>
-                            <th>Điểm số</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
+                            <th class="border-0 fw-bold">Bài kiểm tra</th>
+                            <th class="border-0 fw-bold">Thời gian nộp</th>
+                            <th class="border-0 fw-bold">Câu trả lời</th>
+                            <th class="border-0 fw-bold text-center">File đính kèm</th>
+                            <th class="border-0 fw-bold text-center">Điểm số</th>
+                            <th class="border-0 fw-bold text-center">Trạng thái</th>
+                            <th class="border-0 fw-bold text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var submission in Model)
                         {
-                            <tr>
+                            <tr class="animate__animated animate__fadeIn" style="animation-delay: @(Model.ToList().IndexOf(submission) * 0.1)s;">
                                 <td>
-                                    <strong>@submission.Student.FullName</strong><br>
-                                    <small class="text-muted">@submission.Student.StudentId</small>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 35px; height: 35px; background: linear-gradient(135deg, #667eea, #764ba2);">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-primary">@submission.Student.FullName</div>
+                                            <small class="text-muted">@submission.Student.StudentId</small>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
-                                    <strong>@submission.ExamSchedule.Exam.Title</strong><br>
-                                    <small class="text-muted">
-                                        @submission.ExamSchedule.ClassName - 
-                                        @submission.ExamSchedule.StartTime.ToString("dd/MM/yyyy HH:mm")
-                                    </small>
+                                    <div class="exam-info">
+                                        <div class="fw-bold text-dark">@submission.ExamSchedule.Exam.Title</div>
+                                        <small class="text-muted">
+                                            @submission.ExamSchedule.ClassName -
+                                            @submission.ExamSchedule.StartTime.ToString("dd/MM/yyyy HH:mm")
+                                        </small>
+                                    </div>
                                 </td>
                                 <td>
-                                    @submission.SubmittedAt.ToString("dd/MM/yyyy HH:mm")
-                                    @{
-                                        var timeDiff = submission.SubmittedAt - submission.ExamSchedule.StartTime;
-                                        var isLate = submission.SubmittedAt > submission.ExamSchedule.EndTime;
-                                    }
-                                    @if (isLate)
-                                    {
-                                        <br><span class="badge bg-warning">Nộp muộn</span>
-                                    }
+                                    <div class="submission-time">
+                                        <div class="time-display">@submission.SubmittedAt.ToString("dd/MM/yyyy")</div>
+                                        <div class="time-detail">@submission.SubmittedAt.ToString("HH:mm")</div>
+                                        @{
+                                            var timeDiff = submission.SubmittedAt - submission.ExamSchedule.StartTime;
+                                            var isLate = submission.SubmittedAt > submission.ExamSchedule.EndTime;
+                                        }
+                                        @if (isLate)
+                                        {
+                                            <span class="badge bg-warning rounded-pill px-2 mt-1">
+                                                <i class="fas fa-clock me-1"></i>Nộp muộn
+                                            </span>
+                                        }
+                                    </div>
                                 </td>
                                 <td>
                                     @if (!string.IsNullOrEmpty(submission.AnswerText))
                                     {
-                                        <span title="@submission.AnswerText">
-                                            @(submission.AnswerText.Length > 50 ? submission.AnswerText.Substring(0, 50) + "..." : submission.AnswerText)
+                                        <div class="answer-preview" title="@submission.AnswerText">
+                                            <i class="fas fa-file-text me-1 text-info"></i>
+                                            <span>@(submission.AnswerText.Length > 50 ? submission.AnswerText.Substring(0, 50) + "..." : submission.AnswerText)</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">
+                                            <i class="fas fa-minus-circle me-1"></i>Không có văn bản
                                         </span>
                                     }
-                                    else
-                                    {
-                                        <span class="text-muted">Không có văn bản</span>
-                                    }
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @if (!string.IsNullOrEmpty(submission.AnswerFilePath))
                                     {
-                                        <a href="@Url.Action("DownloadSubmission", new { id = submission.Id })" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-download"></i> Tải file
+                                        <a href="@Url.Action("DownloadSubmission", new { id = submission.Id })"
+                                           class="btn btn-sm btn-outline-primary rounded-pill"
+                                           data-bs-toggle="tooltip"
+                                           title="Tải file bài làm">
+                                            <i class="fas fa-download me-1"></i>Tải file
                                         </a>
                                     }
                                     else
                                     {
-                                        <span class="text-muted">Không có file</span>
+                                        <span class="text-muted fst-italic">
+                                            <i class="fas fa-file-slash me-1"></i>Không có file
+                                        </span>
                                     }
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @if (submission.Grade != null)
                                     {
-                                        var badgeClass = submission.Grade.Score >= 8.0m ? "bg-success" : 
-                                                        submission.Grade.Score >= 6.5m ? "bg-primary" : 
-                                                        submission.Grade.Score >= 5.0m ? "bg-warning" : "bg-danger";
-                                        <span class="badge @badgeClass fs-6">@submission.Grade.Score.ToString("F1")/10</span>
+                                        var score = submission.Grade.Score;
+                                        var badgeClass = score >= 8.0m ? "bg-success" :
+                                                        score >= 6.5m ? "bg-primary" :
+                                                        score >= 5.0m ? "bg-warning" : "bg-danger";
+                                        var gradeText = score >= 8.0m ? "Giỏi" :
+                                                       score >= 6.5m ? "Khá" :
+                                                       score >= 5.0m ? "TB" : "Yếu";
+                                        <div class="grade-display">
+                                            <span class="badge @badgeClass rounded-pill px-3 mb-1">@score.ToString("F1")/10</span>
+                                            <br><small class="text-muted">@gradeText</small>
+                                        </div>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">Chưa chấm</span>
+                                        <span class="badge bg-secondary rounded-pill px-3">
+                                            <i class="fas fa-question-circle me-1"></i>Chưa chấm
+                                        </span>
+                                    }
                                     }
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @if (submission.Grade != null)
                                     {
-                                        <span class="badge bg-success">Đã chấm</span><br>
-                                        <small class="text-muted">@submission.Grade.GradedAt.ToString("dd/MM/yyyy")</small>
+                                        <span class="badge bg-success rounded-pill px-3 mb-1">
+                                            <i class="fas fa-check-circle me-1"></i>Đã chấm
+                                        </span>
+                                        <br><small class="text-muted">@submission.Grade.GradedAt.ToString("dd/MM/yyyy")</small>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-warning">Chờ chấm</span>
+                                        <span class="badge bg-warning rounded-pill px-3">
+                                            <i class="fas fa-clock me-1"></i>Chờ chấm
+                                        </span>
                                     }
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <div class="btn-group" role="group">
-                                        <a href="@Url.Action("GradeSubmission", new { id = submission.Id })" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-star"></i> 
-                                            @(submission.Grade != null ? "Sửa điểm" : "Chấm điểm")
+                                        <a href="@Url.Action("GradeSubmission", new { id = submission.Id })"
+                                           class="btn btn-sm btn-outline-primary rounded-pill me-1"
+                                           data-bs-toggle="tooltip"
+                                           title="@(submission.Grade != null ? "Sửa điểm số" : "Chấm điểm bài thi")">
+                                            <i class="fas fa-star"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#viewModal-@submission.Id">
-                                            <i class="fas fa-eye"></i> Xem
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-info rounded-pill"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#viewModal-@submission.Id"
+                                                title="Xem chi tiết bài làm">
+                                            <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -130,87 +198,247 @@
         else
         {
             <div class="text-center py-5">
-                <i class="fas fa-star fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">Chưa có bài nộp nào</h5>
-                <p class="text-muted">Học sinh chưa nộp bài kiểm tra hoặc chưa có lịch thi nào diễn ra</p>
-                <a href="@Url.Action("Schedules")" class="btn btn-primary">
-                    <i class="fas fa-calendar-alt"></i> Xem lịch thi
-                </a>
+                <div class="empty-state">
+                    <div class="empty-state-icon mb-4">
+                        <i class="fas fa-star fa-4x" style="color: #a8e6cf;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Chưa có bài nộp nào</h4>
+                    <p class="text-muted mb-4">Học sinh chưa nộp bài kiểm tra hoặc chưa có lịch thi nào diễn ra</p>
+                    <a href="@Url.Action("Schedules")" class="btn btn-primary-gradient btn-lg rounded-pill px-4">
+                        <i class="fas fa-calendar-alt me-2"></i>Xem lịch thi
+                    </a>
+                </div>
             </div>
         }
     </div>
 </div>
 
-<!-- Statistics Cards -->
-<div class="row mt-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.Count()</h4>
-                        <p class="mb-0">Tổng bài nộp</p>
+<!-- Enhanced Statistics Cards -->
+<div class="container-fluid px-0 mt-4">
+    <div class="row g-3 justify-content-center mx-auto" style="max-width: 1000px;">
+        <!-- Total Submissions Card -->
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card-modern stat-card-exams">
+                <div class="stat-card-content">
+                    <div class="stat-icon-wrapper">
+                        <div class="stat-icon-bg stat-icon-bg-teal">
+                            <i class="fas fa-file-upload"></i>
+                        </div>
                     </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-file-upload fa-2x"></i>
+                    <div class="stat-info">
+                        <div class="stat-number">@Model.Count()</div>
+                        <div class="stat-label">Tổng bài nộp</div>
+                        <div class="stat-description">Bài làm đã nộp</div>
                     </div>
+                </div>
+                <div class="stat-card-footer">
+                    <span class="stat-link">Chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.Count(s => s.Grade != null)</h4>
-                        <p class="mb-0">Đã chấm điểm</p>
+
+        <!-- Graded Submissions Card -->
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card-modern stat-card-students">
+                <div class="stat-card-content">
+                    <div class="stat-icon-wrapper">
+                        <div class="stat-icon-bg stat-icon-bg-green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
                     </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-check fa-2x"></i>
+                    <div class="stat-info">
+                        <div class="stat-number">@Model.Count(s => s.Grade != null)</div>
+                        <div class="stat-label">Đã chấm điểm</div>
+                        <div class="stat-description">Bài đã có điểm</div>
                     </div>
+                </div>
+                <div class="stat-card-footer">
+                    <span class="stat-link">Chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-warning text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.Count(s => s.Grade == null)</h4>
-                        <p class="mb-0">Chờ chấm điểm</p>
+
+        <!-- Pending Grading Card -->
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card-modern stat-card-subjects">
+                <div class="stat-card-content">
+                    <div class="stat-icon-wrapper">
+                        <div class="stat-icon-bg stat-icon-bg-orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
                     </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-clock fa-2x"></i>
+                    <div class="stat-info">
+                        <div class="stat-number">@Model.Count(s => s.Grade == null)</div>
+                        <div class="stat-label">Chờ chấm điểm</div>
+                        <div class="stat-description">Bài chưa chấm</div>
                     </div>
+                </div>
+                <div class="stat-card-footer">
+                    <span class="stat-link">Chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
+
+        <!-- Average Score Card -->
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card-modern stat-card-classes">
+                <div class="stat-card-content">
+                    <div class="stat-icon-wrapper">
+                        <div class="stat-icon-bg stat-icon-bg-purple">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="stat-info">
                         @{
                             var gradedSubmissions = Model.Where(s => s.Grade != null);
                             var averageScore = gradedSubmissions.Any() ? gradedSubmissions.Average(s => s.Grade.Score) : 0;
                         }
-                        <h4>@averageScore.ToString("F1")</h4>
-                        <p class="mb-0">Điểm trung bình</p>
+                        <div class="stat-number">@averageScore.ToString("F1")</div>
+                        <div class="stat-label">Điểm trung bình</div>
+                        <div class="stat-description">Điểm TB lớp</div>
                     </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-chart-line fa-2x"></i>
-                    </div>
+                </div>
+                <div class="stat-card-footer">
+                    <span class="stat-link">Chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .table tbody tr {
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(168, 230, 207, 0.1) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .submission-time {
+        text-align: center;
+    }
+
+    .time-display {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 2px;
+    }
+
+    .time-detail {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .answer-preview {
+        font-size: 14px;
+        line-height: 1.4;
+        max-width: 200px;
+    }
+
+    .grade-display {
+        text-align: center;
+    }
+
+    .avatar-sm {
+        transition: all 0.3s ease;
+    }
+
+    .avatar-sm:hover {
+        transform: scale(1.05);
+    }
+
+    .badge {
+        transition: all 0.3s ease;
+    }
+
+    .badge:hover {
+        transform: scale(1.05);
+    }
+
+    .empty-state {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .empty-state-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+</style>
+
+@section Scripts {
+<script>
+    // Enhanced Teacher Grading Page Interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize components
+        initializeAnimations();
+        initializeTooltips();
+        initializeGradingActions();
+    });
+
+    function initializeAnimations() {
+        // Animate table rows
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.animationDelay = (index * 0.05) + 's';
+        });
+
+        // Animate stat cards
+        const statCards = document.querySelectorAll('.stat-card-modern');
+        statCards.forEach((card, index) => {
+            card.style.animationDelay = (index * 0.1 + 0.5) + 's';
+            card.classList.add('animate__animated', 'animate__fadeInUp');
+        });
+    }
+
+    function initializeTooltips() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+
+    function initializeGradingActions() {
+        // Add click handlers for grading buttons
+        const gradingButtons = document.querySelectorAll('a[href*="GradeSubmission"]');
+        gradingButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Add loading state
+                const icon = this.querySelector('i');
+                const originalClass = icon.className;
+                icon.className = 'fas fa-spinner fa-spin';
+
+                // Restore after a short delay (for demo purposes)
+                setTimeout(() => {
+                    icon.className = originalClass;
+                }, 1000);
+            });
+        });
+    }
+</script>
+}
 
 <!-- Auto Grading Modal -->
 <div class="modal fade" id="autoGradingModal" tabindex="-1" aria-labelledby="autoGradingModalLabel" aria-hidden="true">
@@ -274,3 +502,4 @@
         </div>
     </div>
 </div>
+</div> <!-- End teacher-page-container -->

@@ -1,0 +1,362 @@
+/* ===================================
+   DOCUMENTATION STYLES
+   =================================== */
+
+.documentation-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Header */
+.doc-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.doc-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.doc-subtitle {
+    font-size: 1.25rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Table of Contents */
+.doc-toc {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    border-left: 4px solid #7fcdcd;
+}
+
+.doc-toc h3 {
+    margin-top: 0;
+    color: #212529;
+    font-weight: 600;
+}
+
+.doc-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.doc-toc li {
+    margin-bottom: 0.5rem;
+}
+
+.doc-toc a {
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.doc-toc a:hover {
+    color: #7fcdcd;
+}
+
+/* Sections */
+.doc-section {
+    margin-bottom: 4rem;
+    scroll-margin-top: 2rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+    border-radius: 2px;
+}
+
+.section-description {
+    font-size: 1.125rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Color System */
+.color-grid {
+    display: grid;
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.color-category h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 1.5rem;
+}
+
+.color-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.color-swatch {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.color-swatch:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.color-preview {
+    height: 80px;
+    width: 100%;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.color-info {
+    padding: 1rem;
+}
+
+.color-info strong {
+    display: block;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.color-info code {
+    display: block;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    color: #495057;
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.css-var {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Typography */
+.typography-showcase {
+    display: grid;
+    gap: 3rem;
+}
+
+.font-family {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.font-example {
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.size-examples,
+.weight-examples {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.size-example {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.size-label {
+    min-width: 120px;
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Spacing */
+.spacing-scale {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.spacing-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.spacing-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.spacing-visual {
+    border-radius: 2px;
+}
+
+.spacing-item span {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Usage Examples */
+.usage-example {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+    border-left: 4px solid #7fcdcd;
+}
+
+.usage-example h4 {
+    margin-top: 0;
+    color: #212529;
+    font-weight: 600;
+}
+
+.usage-example pre {
+    background: #212529;
+    color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 0;
+}
+
+.usage-example code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Component Examples */
+.component-showcase {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.component-example {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.component-example h4 {
+    margin-top: 0;
+    color: #212529;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.component-preview {
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .documentation-container {
+        padding: 1rem;
+    }
+    
+    .doc-title {
+        font-size: 2rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .color-swatches {
+        grid-template-columns: 1fr;
+    }
+    
+    .spacing-examples {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .size-example {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .size-label {
+        min-width: auto;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .documentation-container {
+        max-width: none;
+        padding: 0;
+    }
+    
+    .doc-header {
+        page-break-after: avoid;
+    }
+    
+    .doc-section {
+        page-break-inside: avoid;
+        margin-bottom: 2rem;
+    }
+    
+    .color-preview {
+        border: 1px solid #000;
+    }
+}

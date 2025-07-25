@@ -3,46 +3,67 @@
     ViewData["Title"] = "Thêm học sinh mới";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4><i class="fas fa-plus"></i> Thêm học sinh mới</h4>
+<div class="admin-page-container">
+    <!-- Welcome Header -->
+    <div class="welcome-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="position-relative z-index-2">
+                <h2 class="mb-2 fw-bold">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Thêm học sinh mới 🎓
+                </h2>
+                <p class="mb-0 opacity-75">Tạo tài khoản mới cho học sinh trong hệ thống</p>
             </div>
+            <div class="text-end position-relative z-index-2">
+                <a href="@Url.Action("Students")" class="btn btn-light btn-lg px-4 py-2 rounded-pill shadow-sm">
+                    <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h5 class="mb-0 text-primary fw-bold">
+                        <i class="fas fa-user-plus me-2"></i> Thông tin học sinh
+                    </h5>
+                </div>
             <div class="card-body">
-                <form asp-action="CreateStudent" method="post">
-                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                    
+                <form asp-action="CreateStudent" method="post" class="form-modern">
+                    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label asp-for="FirstName" class="form-label"></label>
-                                <input asp-for="FirstName" class="form-control" placeholder="Nhập tên" />
-                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            <div class="form-group-modern">
+                                <label asp-for="FirstName" class="form-label-modern"></label>
+                                <input asp-for="FirstName" class="form-control-modern" placeholder="Nhập tên" />
+                                <span asp-validation-for="FirstName" class="form-error"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label asp-for="LastName" class="form-label"></label>
-                                <input asp-for="LastName" class="form-control" placeholder="Nhập họ" />
-                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            <div class="form-group-modern">
+                                <label asp-for="LastName" class="form-label-modern"></label>
+                                <input asp-for="LastName" class="form-control-modern" placeholder="Nhập họ" />
+                                <span asp-validation-for="LastName" class="form-error"></span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label asp-for="Email" class="form-label"></label>
-                                <input asp-for="Email" class="form-control" type="email" placeholder="student@example.com" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
+                            <div class="form-group-modern">
+                                <label asp-for="Email" class="form-label-modern"></label>
+                                <input asp-for="Email" class="form-control-modern" type="email" placeholder="student@example.com" />
+                                <span asp-validation-for="Email" class="form-error"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label asp-for="StudentId" class="form-label"></label>
-                                <input asp-for="StudentId" class="form-control" placeholder="VD: SV001" />
-                                <span asp-validation-for="StudentId" class="text-danger"></span>
+                            <div class="form-group-modern">
+                                <label asp-for="StudentId" class="form-label-modern"></label>
+                                <input asp-for="StudentId" class="form-control-modern" placeholder="VD: SV001" />
+                                <span asp-validation-for="StudentId" class="form-error"></span>
                             </div>
                         </div>
                     </div>
@@ -94,18 +115,18 @@
                     </div>
                     
                     <div class="d-flex justify-content-between">
-                        <a href="@Url.Action("Students")" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Quay lại
+                        <a href="@Url.Action("Students")" class="btn btn-outline-secondary btn-lg px-4 rounded-pill">
+                            <i class="fas fa-arrow-left me-2"></i> Quay lại
                         </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Tạo học sinh
+                        <button type="submit" class="btn btn-primary btn-lg px-4 rounded-pill">
+                            <i class="fas fa-save me-2"></i> Tạo học sinh
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
+</div> <!-- End admin-page-container -->
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

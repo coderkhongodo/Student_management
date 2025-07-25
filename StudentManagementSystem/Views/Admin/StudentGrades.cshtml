@@ -3,85 +3,163 @@
     ViewData["Title"] = "Quản lý điểm số";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-star"></i> Quản lý điểm số</h2>
-    <a href="@Url.Action("CreateStudentGrade")" class="btn btn-success">
-        <i class="fas fa-plus"></i> Thêm điểm số mới
-    </a>
+@section Styles {
+    <link href="~/css/admin-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+}
+
+<!-- Welcome Header with Animation -->
+<div class="welcome-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="position-relative z-index-2">
+            <h2 class="mb-2 animate__animated animate__fadeInLeft fw-bold">
+                <i class="fas fa-star me-2"></i>
+                Quản lý điểm số ⭐
+            </h2>
+            <p class="mb-0 opacity-75">Quản lý và theo dõi điểm số của học sinh</p>
+        </div>
+        <div class="text-end position-relative z-index-2">
+            <a href="@Url.Action("CreateStudentGrade")" class="btn btn-light btn-lg px-4 py-2 rounded-pill shadow-sm">
+                <i class="fas fa-plus me-2"></i> Thêm điểm số mới
+            </a>
+        </div>
+    </div>
 </div>
 
-<div class="card">
+<div class="admin-action-card animate__animated animate__fadeInUp">
+    <div class="card-header">
+        <h5 class="mb-0 fw-bold">
+            <i class="fas fa-list me-2"></i> Danh sách điểm số
+        </h5>
+    </div>
     <div class="card-body">
         @if (Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Học sinh</th>
-                            <th>Môn học</th>
-                            <th>Điểm giữa kỳ</th>
-                            <th>Điểm cuối kỳ</th>
-                            <th>Điểm tổng kết</th>
-                            <th>Học kỳ</th>
-                            <th>Năm học</th>
-                            <th>Người tạo</th>
-                            <th>Thao tác</th>
+                <table class="table table-hover">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #a8e6cf, #7fcdcd); color: #2e7d32;">
+                            <th class="border-0 fw-bold">Học sinh</th>
+                            <th class="border-0 fw-bold">Môn học</th>
+                            <th class="border-0 fw-bold">Điểm giữa kỳ</th>
+                            <th class="border-0 fw-bold">Điểm cuối kỳ</th>
+                            <th class="border-0 fw-bold">Điểm tổng kết</th>
+                            <th class="border-0 fw-bold">Học kỳ</th>
+                            <th class="border-0 fw-bold">Năm học</th>
+                            <th class="border-0 fw-bold">Người tạo</th>
+                            <th class="border-0 fw-bold text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var grade in Model)
                         {
-                            <tr>
+                            <tr class="animate__animated animate__fadeIn" style="animation-delay: @(Model.ToList().IndexOf(grade) * 0.1)s;">
                                 <td>
-                                    <strong>@grade.Student.FullName</strong><br>
-                                    <small class="text-muted">@grade.Student.StudentId</small>
+                                    @if (grade.Student != null)
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm me-2">
+                                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                                                    <i class="fas fa-user text-muted"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@grade.Student.FullName</div>
+                                                <small class="text-muted">@grade.Student.StudentId</small>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không xác định</span>
+                                    }
                                 </td>
                                 <td>
-                                    <strong>@grade.Subject.SubjectName</strong><br>
-                                    <small class="text-muted">@grade.Subject.SubjectCode</small>
+                                    @if (grade.Subject != null)
+                                    {
+                                        <div>
+                                            <div class="fw-bold text-primary">@grade.Subject.SubjectName</div>
+                                            <small class="text-muted">@grade.Subject.SubjectCode</small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Không xác định</span>
+                                    }
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @if (grade.MidtermScore > 0)
                                     {
-                                        <span class="badge bg-info">@grade.MidtermScore.ToString("F1")</span>
+                                        <span class="badge bg-info rounded-pill px-3">@grade.MidtermScore.ToString("F1")</span>
                                     }
                                     else
                                     {
                                         <span class="text-muted">Chưa có</span>
                                     }
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @if (grade.FinalScore > 0)
                                     {
-                                        <span class="badge bg-warning">@grade.FinalScore.ToString("F1")</span>
+                                        <span class="badge bg-warning rounded-pill px-3">@grade.FinalScore.ToString("F1")</span>
                                     }
                                     else
                                     {
                                         <span class="text-muted">Chưa có</span>
                                     }
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @{
-                                        var badgeClass = grade.TotalScore >= 8.0m ? "bg-success" :
-                                                        grade.TotalScore >= 6.5m ? "bg-primary" :
-                                                        grade.TotalScore >= 5.0m ? "bg-warning" : "bg-danger";
+                                        var totalScore = grade.TotalScore;
+                                        var badgeClass = totalScore >= 8.0m ? "bg-success" :
+                                                        totalScore >= 6.5m ? "bg-primary" :
+                                                        totalScore >= 5.0m ? "bg-warning" : "bg-danger";
+                                        var gradeText = totalScore >= 8.0m ? "Giỏi" :
+                                                       totalScore >= 6.5m ? "Khá" :
+                                                       totalScore >= 5.0m ? "TB" : "Yếu";
                                     }
-                                    <span class="badge @badgeClass">@grade.TotalScore.ToString("F1")</span>
+                                    <div>
+                                        <span class="badge @badgeClass rounded-pill px-3 mb-1">@totalScore.ToString("F1")</span>
+                                        <br><small class="text-muted">@gradeText</small>
+                                    </div>
                                 </td>
-                                <td>@grade.Semester</td>
-                                <td>@grade.Year</td>
-                                <td>
-                                    <small>@grade.CreatedBy.FullName</small><br>
-                                    <small class="text-muted">@grade.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark rounded-pill">@grade.Semester</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary rounded-pill">@grade.Year</span>
                                 </td>
                                 <td>
+                                    @if (grade.CreatedBy != null)
+                                    {
+                                        <div class="text-center">
+                                            <div class="fw-bold">@grade.CreatedBy.FullName</div>
+                                            <small class="text-muted">@grade.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center">
+                                            <div class="text-muted">
+                                                <i class="fas fa-robot me-1"></i>Hệ thống
+                                            </div>
+                                            <small class="text-muted">@grade.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="text-center">
                                     <div class="btn-group" role="group">
-                                        <a href="@Url.Action("EditStudentGrade", new { id = grade.Id })" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-edit"></i> Sửa
+                                        <a href="@Url.Action("EditStudentGrade", new { id = grade.Id })"
+                                           class="btn btn-sm btn-outline-primary rounded-pill me-1"
+                                           data-bs-toggle="tooltip"
+                                           title="Chỉnh sửa điểm số">
+                                            <i class="fas fa-edit"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@grade.Id">
-                                            <i class="fas fa-trash"></i> Xóa
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger rounded-pill"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal-@grade.Id"
+                                                title="Xóa điểm số">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -94,12 +172,16 @@
         else
         {
             <div class="text-center py-5">
-                <i class="fas fa-star fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">Chưa có điểm số nào</h5>
-                <p class="text-muted">Hãy thêm điểm số đầu tiên cho hệ thống</p>
-                <a href="@Url.Action("CreateStudentGrade")" class="btn btn-success">
-                    <i class="fas fa-plus"></i> Thêm điểm số mới
-                </a>
+                <div class="empty-state">
+                    <div class="empty-state-icon mb-4">
+                        <i class="fas fa-star fa-4x" style="color: #a8e6cf;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Chưa có điểm số nào</h4>
+                    <p class="text-muted mb-4">Hãy thêm điểm số đầu tiên cho hệ thống</p>
+                    <a href="@Url.Action("CreateStudentGrade")" class="btn btn-success-gradient btn-lg rounded-pill px-4">
+                        <i class="fas fa-plus me-2"></i> Thêm điểm số mới
+                    </a>
+                </div>
             </div>
         }
     </div>

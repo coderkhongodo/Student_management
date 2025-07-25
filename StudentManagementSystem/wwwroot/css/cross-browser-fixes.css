@@ -1,0 +1,320 @@
+/* ===================================
+   CROSS-BROWSER COMPATIBILITY FIXES
+   =================================== */
+
+/* CSS Reset for consistent behavior across browsers */
+* {
+    box-sizing: border-box;
+}
+
+/* Firefox specific fixes */
+@-moz-document url-prefix() {
+    /* Firefox button fixes */
+    .btn {
+        -moz-appearance: none;
+        background-clip: padding-box;
+    }
+    
+    /* Firefox input fixes */
+    .form-control,
+    .form-select {
+        -moz-appearance: none;
+    }
+    
+    /* Firefox scrollbar styling */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-gray-400) var(--color-gray-100);
+    }
+}
+
+/* Safari specific fixes */
+@supports (-webkit-appearance: none) {
+    /* Safari button fixes */
+    .btn {
+        -webkit-appearance: none;
+        -webkit-border-radius: var(--border-radius-md);
+    }
+    
+    /* Safari input fixes */
+    .form-control,
+    .form-select {
+        -webkit-appearance: none;
+        -webkit-border-radius: var(--border-radius-md);
+    }
+    
+    /* Safari date input fixes */
+    input[type="date"],
+    input[type="datetime-local"] {
+        -webkit-appearance: none;
+        -webkit-border-radius: var(--border-radius-md);
+    }
+    
+    /* Safari sticky positioning */
+    .sticky-top {
+        position: -webkit-sticky;
+        position: sticky;
+    }
+}
+
+/* Edge/IE specific fixes */
+@supports (-ms-ime-align: auto) {
+    /* Edge flexbox fixes */
+    .d-flex {
+        display: -ms-flexbox;
+        display: flex;
+    }
+    
+    .flex-column {
+        -ms-flex-direction: column;
+        flex-direction: column;
+    }
+    
+    .justify-content-between {
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+    }
+    
+    .align-items-center {
+        -ms-flex-align: center;
+        align-items: center;
+    }
+}
+
+/* Chrome specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    /* Chrome autofill styling */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px var(--color-white) inset;
+        -webkit-text-fill-color: var(--color-gray-900);
+        transition: background-color 5000s ease-in-out 0s;
+    }
+    
+    /* Chrome scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: var(--color-gray-100);
+        border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: var(--color-gray-400);
+        border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-gray-500);
+    }
+}
+
+/* Universal browser fixes */
+
+/* Flexbox fallbacks */
+.d-flex {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.flex-column {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+/* Grid fallbacks */
+.row {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+/* Transform fallbacks */
+.transform-hover:hover {
+    -webkit-transform: translateY(-2px);
+    -moz-transform: translateY(-2px);
+    -ms-transform: translateY(-2px);
+    -o-transform: translateY(-2px);
+    transform: translateY(-2px);
+}
+
+/* Transition fallbacks */
+.transition-base {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+/* Border radius fallbacks */
+.rounded {
+    -webkit-border-radius: var(--border-radius-md);
+    -moz-border-radius: var(--border-radius-md);
+    border-radius: var(--border-radius-md);
+}
+
+.rounded-pill {
+    -webkit-border-radius: 50rem;
+    -moz-border-radius: 50rem;
+    border-radius: 50rem;
+}
+
+/* Box shadow fallbacks */
+.shadow-sm {
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow {
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-lg {
+    -webkit-box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient fallbacks */
+.bg-gradient-primary {
+    background: var(--color-primary); /* Fallback */
+    background: -webkit-linear-gradient(135deg, var(--color-primary), var(--color-blue-600));
+    background: -moz-linear-gradient(135deg, var(--color-primary), var(--color-blue-600));
+    background: -ms-linear-gradient(135deg, var(--color-primary), var(--color-blue-600));
+    background: -o-linear-gradient(135deg, var(--color-primary), var(--color-blue-600));
+    background: linear-gradient(135deg, var(--color-primary), var(--color-blue-600));
+}
+
+/* CSS Grid fallbacks for older browsers */
+@supports not (display: grid) {
+    .footer-links {
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    }
+    
+    .footer-section {
+        -webkit-box-flex: 1;
+        -moz-box-flex: 1;
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        min-width: 200px;
+        margin-bottom: var(--spacing-4);
+    }
+}
+
+/* CSS Custom Properties fallbacks */
+.btn-primary {
+    background-color: #007bff; /* Fallback */
+    background-color: var(--color-primary);
+    border-color: #007bff; /* Fallback */
+    border-color: var(--color-primary);
+}
+
+.text-primary {
+    color: #007bff; /* Fallback */
+    color: var(--color-primary);
+}
+
+/* Font loading optimization */
+@font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    src: local('Inter'), url('/fonts/inter.woff2') format('woff2');
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .btn,
+    .navbar,
+    .sidebar {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+    
+    .table {
+        border-collapse: collapse !important;
+    }
+    
+    .table th,
+    .table td {
+        border: 1px solid #000 !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .btn {
+        border: 2px solid;
+    }
+    
+    .card {
+        border: 2px solid;
+    }
+    
+    .form-control {
+        border: 2px solid;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .animate__animated {
+        animation: none !important;
+    }
+}
+
+/* Dark mode support preparation */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: #1a1a1a;
+        --color-text: #ffffff;
+        --color-border: #333333;
+    }
+    
+    /* This will be expanded when dark mode is implemented */
+}

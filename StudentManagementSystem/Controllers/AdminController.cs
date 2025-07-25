@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -316,25 +317,60 @@ namespace StudentManagementSystem.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-                return NotFound();
-            }
-
-            // Kiểm tra xem học sinh có bài nộp nào không
-            var hasSubmissions = await _context.Submissions.AnyAsync(s => s.StudentUserId == id);
-            if (hasSubmissions)
-            {
-                TempData["Error"] = "Không thể xóa học sinh này vì đã có bài nộp!";
+                TempData["Error"] = "Không tìm thấy sinh viên cần xóa!";
                 return RedirectToAction(nameof(Students));
             }
 
-            var result = await _userManager.DeleteAsync(user);
-            if (result.Succeeded)
+            try
             {
-                TempData["Success"] = "Học sinh đã được xóa thành công!";
+                // Kiểm tra xem học sinh có bài nộp nào không
+                var hasSubmissions = await _context.Submissions.AnyAsync(s => s.StudentUserId == id);
+                if (hasSubmissions)
+                {
+                    TempData["Error"] = $"Không thể xóa sinh viên {user.FullName} vì đã có bài nộp trong hệ thống!";
+                    return RedirectToAction(nameof(Students));
+                }
+
+                // Kiểm tra xem học sinh có điểm số nào không
+                var hasGrades = await _context.StudentGrades.AnyAsync(sg => sg.StudentUserId == id);
+                if (hasGrades)
+                {
+                    TempData["Error"] = $"Không thể xóa sinh viên {user.FullName} vì đã có điểm số trong hệ thống!";
+                    return RedirectToAction(nameof(Students));
+                }
+
+                // Kiểm tra xem học sinh có trong lớp học nào không
+                var hasClassAssignments = await _context.ClassStudents.AnyAsync(cs => cs.StudentUserId == id);
+                if (hasClassAssignments)
+                {
+                    // Xóa các phân công lớp học trước
+                    var classAssignments = await _context.ClassStudents.Where(cs => cs.StudentUserId == id).ToListAsync();
+                    _context.ClassStudents.RemoveRange(classAssignments);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Kiểm tra xem học sinh có điểm danh nào không
+                var hasAttendances = await _context.Attendances.AnyAsync(a => a.StudentUserId == id);
+                if (hasAttendances)
+                {
+                    TempData["Error"] = $"Không thể xóa sinh viên {user.FullName} vì đã có dữ liệu điểm danh trong hệ thống!";
+                    return RedirectToAction(nameof(Students));
+                }
+
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    TempData["Success"] = $"Sinh viên {user.FullName} (Mã SV: {user.StudentId}) đã được xóa thành công!";
+                }
+                else
+                {
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    TempData["Error"] = $"Có lỗi xảy ra khi xóa sinh viên: {errors}";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["Error"] = "Có lỗi xảy ra khi xóa học sinh!";
+                TempData["Error"] = $"Có lỗi hệ thống xảy ra: {ex.Message}";
             }
 
             return RedirectToAction(nameof(Students));

@@ -1,0 +1,289 @@
+@{
+    ViewData["Title"] = "Design System Documentation";
+    Layout = "_DocumentationLayout";
+}
+
+@section Styles {
+    <link href="~/css/documentation.css" rel="stylesheet" />
+    <link href="~/css/design-system.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet" />
+}
+
+<div class="documentation-container">
+    <!-- Header -->
+    <div class="doc-header">
+        <h1 class="doc-title">
+            <i class="fas fa-palette me-3"></i>
+            Design System Documentation
+        </h1>
+        <p class="doc-subtitle">Comprehensive guide to the Student Management System design system</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="doc-toc">
+        <h3>Table of Contents</h3>
+        <ul>
+            <li><a href="#colors">Color Palette</a></li>
+            <li><a href="#typography">Typography</a></li>
+            <li><a href="#spacing">Spacing System</a></li>
+            <li><a href="#components">Components</a></li>
+            <li><a href="#responsive">Responsive Design</a></li>
+            <li><a href="#accessibility">Accessibility</a></li>
+        </ul>
+    </div>
+
+    <!-- Color Palette Section -->
+    <section id="colors" class="doc-section">
+        <h2 class="section-title">Color Palette</h2>
+        <p class="section-description">Our color system is designed for accessibility and consistency across all interfaces.</p>
+        
+        <div class="color-grid">
+            <!-- Primary Colors -->
+            <div class="color-category">
+                <h3>Primary Colors</h3>
+                <div class="color-swatches">
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #a8e6cf;"></div>
+                        <div class="color-info">
+                            <strong>Primary Light</strong>
+                            <code>#a8e6cf</code>
+                            <span class="css-var">--color-primary-light</span>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #7fcdcd;"></div>
+                        <div class="color-info">
+                            <strong>Primary</strong>
+                            <code>#7fcdcd</code>
+                            <span class="css-var">--color-primary</span>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #81c784;"></div>
+                        <div class="color-info">
+                            <strong>Primary Dark</strong>
+                            <code>#81c784</code>
+                            <span class="css-var">--color-primary-dark</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Semantic Colors -->
+            <div class="color-category">
+                <h3>Semantic Colors</h3>
+                <div class="color-swatches">
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #28a745;"></div>
+                        <div class="color-info">
+                            <strong>Success</strong>
+                            <code>#28a745</code>
+                            <span class="css-var">--color-success</span>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #dc3545;"></div>
+                        <div class="color-info">
+                            <strong>Danger</strong>
+                            <code>#dc3545</code>
+                            <span class="css-var">--color-danger</span>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #ffc107;"></div>
+                        <div class="color-info">
+                            <strong>Warning</strong>
+                            <code>#ffc107</code>
+                            <span class="css-var">--color-warning</span>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #17a2b8;"></div>
+                        <div class="color-info">
+                            <strong>Info</strong>
+                            <code>#17a2b8</code>
+                            <span class="css-var">--color-info</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Neutral Colors -->
+            <div class="color-category">
+                <h3>Neutral Colors</h3>
+                <div class="color-swatches">
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #ffffff;"></div>
+                        <div class="color-info">
+                            <strong>White</strong>
+                            <code>#ffffff</code>
+                            <span class="css-var">--color-white</span>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #f8f9fa;"></div>
+                        <div class="color-info">
+                            <strong>Gray 50</strong>
+                            <code>#f8f9fa</code>
+                            <span class="css-var">--color-gray-50</span>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #6c757d;"></div>
+                        <div class="color-info">
+                            <strong>Gray 600</strong>
+                            <code>#6c757d</code>
+                            <span class="css-var">--color-gray-600</span>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-preview" style="background-color: #212529;"></div>
+                        <div class="color-info">
+                            <strong>Gray 900</strong>
+                            <code>#212529</code>
+                            <span class="css-var">--color-gray-900</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="usage-example">
+            <h4>Usage Example</h4>
+            <pre><code class="language-css">/* Using CSS Custom Properties */
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* Direct color usage */
+.success-message {
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+}</code></pre>
+        </div>
+    </section>
+
+    <!-- Typography Section -->
+    <section id="typography" class="doc-section">
+        <h2 class="section-title">Typography</h2>
+        <p class="section-description">Our typography system ensures readability and hierarchy across all content.</p>
+        
+        <div class="typography-showcase">
+            <div class="font-family">
+                <h3>Font Family</h3>
+                <p class="font-example" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    Inter - The quick brown fox jumps over the lazy dog
+                </p>
+                <code>font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;</code>
+            </div>
+
+            <div class="font-sizes">
+                <h3>Font Sizes</h3>
+                <div class="size-examples">
+                    <div class="size-example">
+                        <span class="size-label">4XL (3rem)</span>
+                        <h1 style="font-size: 3rem; margin: 0;">Heading 1</h1>
+                    </div>
+                    <div class="size-example">
+                        <span class="size-label">3XL (2.5rem)</span>
+                        <h2 style="font-size: 2.5rem; margin: 0;">Heading 2</h2>
+                    </div>
+                    <div class="size-example">
+                        <span class="size-label">2XL (2rem)</span>
+                        <h3 style="font-size: 2rem; margin: 0;">Heading 3</h3>
+                    </div>
+                    <div class="size-example">
+                        <span class="size-label">XL (1.5rem)</span>
+                        <h4 style="font-size: 1.5rem; margin: 0;">Heading 4</h4>
+                    </div>
+                    <div class="size-example">
+                        <span class="size-label">LG (1.25rem)</span>
+                        <h5 style="font-size: 1.25rem; margin: 0;">Heading 5</h5>
+                    </div>
+                    <div class="size-example">
+                        <span class="size-label">Base (1rem)</span>
+                        <p style="font-size: 1rem; margin: 0;">Body text</p>
+                    </div>
+                    <div class="size-example">
+                        <span class="size-label">SM (0.875rem)</span>
+                        <small style="font-size: 0.875rem;">Small text</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="font-weights">
+                <h3>Font Weights</h3>
+                <div class="weight-examples">
+                    <p style="font-weight: 300;">Light (300) - The quick brown fox</p>
+                    <p style="font-weight: 400;">Regular (400) - The quick brown fox</p>
+                    <p style="font-weight: 500;">Medium (500) - The quick brown fox</p>
+                    <p style="font-weight: 600;">Semibold (600) - The quick brown fox</p>
+                    <p style="font-weight: 700;">Bold (700) - The quick brown fox</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Spacing Section -->
+    <section id="spacing" class="doc-section">
+        <h2 class="section-title">Spacing System</h2>
+        <p class="section-description">Consistent spacing creates visual rhythm and improves readability.</p>
+        
+        <div class="spacing-scale">
+            <h3>Spacing Scale (8px base unit)</h3>
+            <div class="spacing-examples">
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 4px; height: 20px; background: var(--color-primary);"></div>
+                    <span>1 (4px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 8px; height: 20px; background: var(--color-primary);"></div>
+                    <span>2 (8px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 12px; height: 20px; background: var(--color-primary);"></div>
+                    <span>3 (12px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 16px; height: 20px; background: var(--color-primary);"></div>
+                    <span>4 (16px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 24px; height: 20px; background: var(--color-primary);"></div>
+                    <span>6 (24px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 32px; height: 20px; background: var(--color-primary);"></div>
+                    <span>8 (32px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 48px; height: 20px; background: var(--color-primary);"></div>
+                    <span>12 (48px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-visual" style="width: 64px; height: 20px; background: var(--color-primary);"></div>
+                    <span>16 (64px)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="usage-example">
+            <h4>Usage Example</h4>
+            <pre><code class="language-css">/* Using spacing variables */
+.card {
+    padding: var(--spacing-6); /* 24px */
+    margin-bottom: var(--spacing-4); /* 16px */
+}
+
+.btn {
+    padding: var(--spacing-3) var(--spacing-6); /* 12px 24px */
+}</code></pre>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+}

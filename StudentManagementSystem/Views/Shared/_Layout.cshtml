@@ -1,83 +1,202 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Hệ thống quản lý sinh viên hiện đại và thân thiện" />
+    <meta name="theme-color" content="#a8e6cf" />
     <title>@ViewData["Title"] - Hệ thống quản lý sinh viên</title>
-    <script type="importmap"></script>
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="~/lib/bootstrap/dist/css/bootstrap.min.css" as="style" />
+    <link rel="preload" href="~/css/design-system.css" as="style" />
+    <link rel="preload" href="~/css/cross-browser-fixes.css" as="style" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" />
+
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+
+    <!-- Core CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/design-system.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/cross-browser-fixes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/mobile-optimizations.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/accessibility.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/micro-interactions.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StudentManagementSystem.styles.css" asp-append-version="true" />
+
+    <!-- External CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <link rel="stylesheet" href="~/css/student-ui.css" asp-append-version="true" />
+
+    <!-- Role-specific CSS -->
+    @if (User.IsInRole("Admin"))
+    {
+        <link rel="stylesheet" href="~/css/admin-ui.css" asp-append-version="true" />
+    }
+    @if (User.IsInRole("Teacher"))
+    {
+        <link rel="stylesheet" href="~/css/teacher-ui.css" asp-append-version="true" />
+    }
+    @if (User.IsInRole("Student"))
+    {
+        <link rel="stylesheet" href="~/css/student-ui.css" asp-append-version="true" />
+    }
+
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow mb-3">
+    <!-- Skip Links for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#navigation" class="skip-link">Skip to navigation</a>
+
+    <header class="main-header" role="banner">
+        <nav class="navbar navbar-expand-lg navbar-modern shadow-sm" role="navigation" id="navigation" aria-label="Main navigation">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="fas fa-graduation-cap"></i> Hệ thống quản lý sinh viên
+                <a class="navbar-brand brand-modern" asp-area="" asp-controller="Home" asp-action="Index">
+                    <div class="brand-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-title">SMS</span>
+                        <span class="brand-subtitle">Student Management</span>
+                    </div>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="toggler-icon"></span>
+                    <span class="toggler-icon"></span>
+                    <span class="toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 main-nav">
                         @if (User.Identity!.IsAuthenticated)
                         {
                             @if (User.IsInRole("Admin"))
                             {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-users-cog"></i> Quản lý
+                                <li class="nav-item dropdown nav-dropdown-modern">
+                                    <a class="nav-link dropdown-toggle nav-link-modern" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <div class="nav-link-content">
+                                            <i class="fas fa-users-cog nav-icon"></i>
+                                            <span class="nav-text">Quản lý</span>
+                                        </div>
                                     </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index"><i class="fas fa-tachometer-alt"></i> Bảng điều khiển</a></li>
+                                    <ul class="dropdown-menu dropdown-menu-modern">
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Admin" asp-action="Index">
+                                            <i class="fas fa-home"></i> Bảng điều khiển
+                                        </a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Teachers"><i class="fas fa-chalkboard-teacher"></i> Giảng viên</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Students"><i class="fas fa-user-graduate"></i> Học sinh</a></li>
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-users me-2"></i>Người dùng
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Admin" asp-action="Teachers">
+                                            <i class="fas fa-chalkboard-teacher"></i> Giảng viên
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Admin" asp-action="Students">
+                                            <i class="fas fa-user-graduate"></i> Học sinh
+                                        </a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Subjects"><i class="fas fa-book"></i> Môn học</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Classes"><i class="fas fa-chalkboard"></i> Lớp học</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Exams"><i class="fas fa-file-alt"></i> Bài kiểm tra</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="StudentGrades"><i class="fas fa-star"></i> Điểm số</a></li>
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-graduation-cap me-2"></i>Học tập
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Admin" asp-action="Subjects">
+                                            <i class="fas fa-book"></i> Môn học
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Admin" asp-action="Classes">
+                                            <i class="fas fa-chalkboard"></i> Lớp học
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Admin" asp-action="Exams">
+                                            <i class="fas fa-file-alt"></i> Bài kiểm tra
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Admin" asp-action="StudentGrades">
+                                            <i class="fas fa-star"></i> Điểm số
+                                        </a></li>
                                     </ul>
                                 </li>
                             }
                             @if (User.IsInRole("Teacher"))
                             {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-chalkboard-teacher"></i> Giảng viên
+                                <li class="nav-item dropdown nav-dropdown-modern">
+                                    <a class="nav-link dropdown-toggle nav-link-modern" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <div class="nav-link-content">
+                                            <i class="fas fa-chalkboard-teacher nav-icon"></i>
+                                            <span class="nav-text">Giảng viên</span>
+                                        </div>
                                     </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Index"><i class="fas fa-tachometer-alt"></i> Bảng điều khiển</a></li>
+                                    <ul class="dropdown-menu dropdown-menu-modern">
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Teacher" asp-action="Index">
+                                            <i class="fas fa-home"></i> Bảng điều khiển
+                                        </a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-controller="Teacher" asp-action="MyClasses"><i class="fas fa-school"></i> Lớp học của tôi</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Sessions"><i class="fas fa-calendar-alt"></i> Quản lý buổi học</a></li>
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-school me-2"></i>Lớp học
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Teacher" asp-action="MyClasses">
+                                            <i class="fas fa-chalkboard"></i> Lớp học của tôi
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Teacher" asp-action="Sessions">
+                                            <i class="fas fa-calendar-alt"></i> Quản lý buổi học
+                                        </a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Exams"><i class="fas fa-file-alt"></i> Bài kiểm tra</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Schedules"><i class="fas fa-calendar"></i> Lịch thi</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Teacher" asp-action="Grading"><i class="fas fa-star"></i> Chấm điểm</a></li>
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-file-alt me-2"></i>Kiểm tra
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Teacher" asp-action="Exams">
+                                            <i class="fas fa-file-alt"></i> Bài kiểm tra
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Teacher" asp-action="Schedules">
+                                            <i class="fas fa-calendar"></i> Lịch thi
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Teacher" asp-action="Grading">
+                                            <i class="fas fa-star"></i> Chấm điểm
+                                        </a></li>
                                     </ul>
                                 </li>
                             }
                             @if (User.IsInRole("Student"))
                             {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-user-graduate"></i> Học sinh
+                                <li class="nav-item dropdown nav-dropdown-modern">
+                                    <a class="nav-link dropdown-toggle nav-link-modern" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <div class="nav-link-content">
+                                            <i class="fas fa-user-graduate nav-icon"></i>
+                                            <span class="nav-text">Học sinh</span>
+                                        </div>
                                     </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" asp-controller="Student" asp-action="Index"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Student" asp-action="MySchedule"><i class="fas fa-calendar-alt"></i> Lịch học</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Student" asp-action="AvailableExams"><i class="fas fa-file-alt"></i> Bài kiểm tra</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Student" asp-action="MySubmissions"><i class="fas fa-paper-plane"></i> Bài đã nộp</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Student" asp-action="MyGrades"><i class="fas fa-star"></i> Điểm số</a></li>
+                                    <ul class="dropdown-menu dropdown-menu-modern">
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Student" asp-action="Index">
+                                            <i class="fas fa-home"></i> Dashboard
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-calendar me-2"></i>Lịch học
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Student" asp-action="MySchedule">
+                                            <i class="fas fa-calendar-alt"></i> Lịch học
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li class="dropdown-header">
+                                            <i class="fas fa-file-alt me-2"></i>Bài kiểm tra
+                                        </li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Student" asp-action="AvailableExams">
+                                            <i class="fas fa-file-alt"></i> Bài kiểm tra
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Student" asp-action="MySubmissions">
+                                            <i class="fas fa-paper-plane"></i> Bài đã nộp
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-modern" asp-controller="Student" asp-action="MyGrades">
+                                            <i class="fas fa-star"></i> Điểm số
+                                        </a></li>
                                     </ul>
                                 </li>
                             }
@@ -85,23 +204,51 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> Trang chủ</a>
+                                <a class="nav-link nav-link-modern" asp-area="" asp-controller="Home" asp-action="Index">
+                                    <div class="nav-link-content">
+                                        <i class="fas fa-home nav-icon"></i>
+                                        <span class="nav-text">Trang chủ</span>
+                                    </div>
+                                </a>
                             </li>
                         }
                     </ul>
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav user-nav">
                         @if (User.Identity!.IsAuthenticated)
                         {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user"></i> @User.Identity.Name
+                            <li class="nav-item dropdown nav-dropdown-modern user-dropdown">
+                                <a class="nav-link dropdown-toggle nav-link-modern user-nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="user-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="user-info">
+                                        <span class="user-name">@User.Identity.Name</span>
+                                        <span class="user-role">@(User.IsInRole("Admin") ? "Quản trị viên" : User.IsInRole("Teacher") ? "Giảng viên" : "Học sinh")</span>
+                                    </div>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-edit"></i> Hồ sơ</a></li>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-modern user-dropdown-menu">
+                                    <li class="dropdown-header user-dropdown-header">
+                                        <div class="user-avatar-large">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="user-details">
+                                            <strong>@User.Identity.Name</strong>
+                                            <small>@(User.IsInRole("Admin") ? "Quản trị viên" : User.IsInRole("Teacher") ? "Giảng viên" : "Học sinh")</small>
+                                        </div>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item dropdown-item-modern" href="#">
+                                        <i class="fas fa-user-edit"></i> Hồ sơ cá nhân
+                                    </a></li>
+                                    <li><a class="dropdown-item dropdown-item-modern" href="#">
+                                        <i class="fas fa-cog"></i> Cài đặt
+                                    </a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                            <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline w-100">
+                                            <button type="submit" class="dropdown-item dropdown-item-modern logout-btn">
+                                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                            </button>
                                         </form>
                                     </li>
                                 </ul>
@@ -110,7 +257,12 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+                                <a class="nav-link nav-link-modern login-link" asp-controller="Account" asp-action="Login">
+                                    <div class="nav-link-content">
+                                        <i class="fas fa-sign-in-alt nav-icon"></i>
+                                        <span class="nav-text">Đăng nhập</span>
+                                    </div>
+                                </a>
                             </li>
                         }
                     </ul>
@@ -118,24 +270,144 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
+    <!-- Main Content Area -->
+    <main class="main-content" role="main" id="main-content" aria-label="Main content">
+        <div class="container-fluid main-container">
+            <div class="content-wrapper">
+                @RenderBody()
+            </div>
+        </div>
+    </main>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
         <div class="container">
-            &copy; 2025 - StudentManagementSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="footer-info">
+                        <h6>Student Management System</h6>
+                        <p>Hệ thống quản lý sinh viên hiện đại</p>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h6>Liên kết</h6>
+                        <ul>
+                            <li><a asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                            <li><a asp-area="" asp-controller="Home" asp-action="Privacy">Chính sách bảo mật</a></li>
+                            <li><a href="#">Hỗ trợ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h6>Liên hệ</h6>
+                        <ul>
+                            <li><i class="fas fa-envelope"></i> support@sms.edu.vn</li>
+                            <li><i class="fas fa-phone"></i> (84) 123-456-789</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">
+                    <p>&copy; 2025 Student Management System. All rights reserved.</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
         </div>
     </footer>
+    <!-- Core JavaScript -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/design-system.js" asp-append-version="true"></script>
+    <script src="~/js/accessibility.js" asp-append-version="true"></script>
+    <script src="~/js/micro-interactions.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Role-specific JavaScript -->
+    @if (User.IsInRole("Admin"))
+    {
+        <script src="~/js/admin-ui.js" asp-append-version="true"></script>
+    }
+    @if (User.IsInRole("Teacher"))
+    {
+        <script src="~/js/teacher-ui.js" asp-append-version="true"></script>
+    }
     @if (User.IsInRole("Student"))
     {
         <script src="~/js/student-ui.js" asp-append-version="true"></script>
     }
+
+    <!-- Page-specific scripts -->
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Performance optimized initialization -->
+    <script>
+        // Optimized DOMContentLoaded with performance monitoring
+        (function() {
+            var startTime = performance.now();
+
+            function initializeApp() {
+                try {
+                    // Initialize design system components
+                    if (typeof DesignSystem !== 'undefined') {
+                        DesignSystem.init();
+                    }
+
+                    // Lazy initialize Bootstrap components
+                    requestIdleCallback(function() {
+                        // Initialize tooltips
+                        var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                        if (tooltipTriggerList.length > 0) {
+                            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                                new bootstrap.Tooltip(tooltipTriggerEl);
+                            });
+                        }
+
+                        // Initialize popovers
+                        var popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+                        if (popoverTriggerList.length > 0) {
+                            popoverTriggerList.forEach(function(popoverTriggerEl) {
+                                new bootstrap.Popover(popoverTriggerEl);
+                            });
+                        }
+                    });
+
+                    // Performance logging
+                    var endTime = performance.now();
+                    console.log('App initialization took ' + (endTime - startTime) + ' milliseconds.');
+
+                } catch (error) {
+                    console.error('Error during app initialization:', error);
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeApp);
+            } else {
+                initializeApp();
+            }
+        })();
+
+        // Service Worker registration for caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

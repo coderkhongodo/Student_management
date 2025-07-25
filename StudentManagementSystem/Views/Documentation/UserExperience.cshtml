@@ -1,0 +1,439 @@
+@{
+    ViewData["Title"] = "User Experience Guidelines";
+    Layout = "_DocumentationLayout";
+}
+
+@section Styles {
+    <link href="~/css/documentation.css" rel="stylesheet" />
+    <style>
+        .user-flow {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .interaction-pattern {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: border-color 0.3s ease;
+        }
+        
+        .interaction-pattern:hover {
+            border-color: #7fcdcd;
+        }
+        
+        .pattern-title {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pattern-description {
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+        
+        .do-dont {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .do-section, .dont-section {
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+        
+        .do-section {
+            background: rgba(40, 167, 69, 0.1);
+            border-left: 4px solid #28a745;
+        }
+        
+        .dont-section {
+            background: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid #dc3545;
+        }
+        
+        .do-section h4 {
+            color: #28a745;
+        }
+        
+        .dont-section h4 {
+            color: #dc3545;
+        }
+        
+        .accessibility-checklist {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .checklist-icon {
+            color: #28a745;
+            margin-right: 1rem;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+        }
+        
+        @@media (max-width: 768px) {
+            .do-dont {
+                grid-template-columns: 1fr;
+            }
+            
+            .flow-step {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+}
+
+<div class="documentation-container">
+    <!-- Header -->
+    <div class="doc-header">
+        <h1 class="doc-title">
+            <i class="fas fa-user-friends me-3"></i>
+            User Experience Guidelines
+        </h1>
+        <p class="doc-subtitle">Comprehensive UX guidelines for consistent and accessible user experiences</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="doc-toc">
+        <h3>Table of Contents</h3>
+        <ul>
+            <li><a href="#user-flows">User Flows</a></li>
+            <li><a href="#interaction-patterns">Interaction Patterns</a></li>
+            <li><a href="#accessibility">Accessibility Guidelines</a></li>
+            <li><a href="#best-practices">Best Practices</a></li>
+            <li><a href="#responsive-ux">Responsive UX</a></li>
+        </ul>
+    </div>
+
+    <!-- User Flows Section -->
+    <section id="user-flows" class="doc-section">
+        <h2 class="section-title">User Flows</h2>
+        <p class="section-description">Key user journeys and workflows in the Student Management System.</p>
+        
+        <div class="user-flow">
+            <h3>Student Exam Taking Flow</h3>
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>Login & Dashboard</strong>
+                    <p class="mb-0">Student logs in and sees available exams on dashboard</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Browse Available Exams</strong>
+                    <p class="mb-0">Navigate to "Available Exams" to see all active exams with status indicators</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Start Exam</strong>
+                    <p class="mb-0">Click "Start Exam" button, confirm understanding of rules and time limits</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">4</div>
+                <div>
+                    <strong>Take Exam</strong>
+                    <p class="mb-0">Answer questions with timer visible, auto-save progress, navigation between questions</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">5</div>
+                <div>
+                    <strong>Submit & Confirmation</strong>
+                    <p class="mb-0">Submit exam with confirmation dialog, receive submission confirmation</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="user-flow">
+            <h3>Teacher Class Management Flow</h3>
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>Access My Classes</strong>
+                    <p class="mb-0">Teacher views assigned classes with student counts and recent activity</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Select Class</strong>
+                    <p class="mb-0">Click on class to view detailed information and management options</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Manage Students</strong>
+                    <p class="mb-0">View student list, attendance records, and performance analytics</p>
+                </div>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">4</div>
+                <div>
+                    <strong>Create/Grade Exams</strong>
+                    <p class="mb-0">Create new exams or grade submitted assignments with bulk actions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interaction Patterns Section -->
+    <section id="interaction-patterns" class="doc-section">
+        <h2 class="section-title">Interaction Patterns</h2>
+        <p class="section-description">Consistent interaction patterns used throughout the application.</p>
+        
+        <div class="interaction-pattern">
+            <div class="pattern-title">Progressive Disclosure</div>
+            <div class="pattern-description">Show essential information first, reveal details on demand</div>
+            <strong>Usage:</strong> Dashboard cards show summary, click for detailed view
+            <br><strong>Implementation:</strong> Expandable cards, modal dialogs, drill-down navigation
+        </div>
+
+        <div class="interaction-pattern">
+            <div class="pattern-title">Immediate Feedback</div>
+            <div class="pattern-description">Provide instant visual feedback for user actions</div>
+            <strong>Usage:</strong> Form validation, button states, loading indicators
+            <br><strong>Implementation:</strong> Color changes, animations, progress bars, success messages
+        </div>
+
+        <div class="interaction-pattern">
+            <div class="pattern-title">Contextual Actions</div>
+            <div class="pattern-description">Show relevant actions based on current context</div>
+            <strong>Usage:</strong> Table row actions, contextual menus, smart defaults
+            <br><strong>Implementation:</strong> Hover states, dropdown menus, conditional visibility
+        </div>
+
+        <div class="interaction-pattern">
+            <div class="pattern-title">Confirmation Dialogs</div>
+            <div class="pattern-description">Prevent accidental destructive actions</div>
+            <strong>Usage:</strong> Delete operations, exam submission, data changes
+            <br><strong>Implementation:</strong> Modal dialogs with clear action buttons
+        </div>
+
+        <div class="interaction-pattern">
+            <div class="pattern-title">Bulk Operations</div>
+            <div class="pattern-description">Allow efficient management of multiple items</div>
+            <strong>Usage:</strong> Grade multiple submissions, manage student enrollments
+            <br><strong>Implementation:</strong> Checkboxes, select all, batch action buttons
+        </div>
+    </section>
+
+    <!-- Accessibility Guidelines Section -->
+    <section id="accessibility" class="doc-section">
+        <h2 class="section-title">Accessibility Guidelines</h2>
+        <p class="section-description">WCAG 2.1 AA compliance guidelines for inclusive design.</p>
+        
+        <div class="accessibility-checklist">
+            <h3>Keyboard Navigation</h3>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Tab Order:</strong> Logical tab sequence through interactive elements
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Focus Indicators:</strong> Visible focus rings on all interactive elements
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Keyboard Shortcuts:</strong> Alt+M (main content), Alt+N (navigation), Escape (close modals)
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Skip Links:</strong> Allow screen reader users to skip to main content
+                </div>
+            </div>
+        </div>
+
+        <div class="accessibility-checklist">
+            <h3>Screen Reader Support</h3>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>ARIA Labels:</strong> Descriptive labels for all interactive elements
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Landmarks:</strong> Proper use of header, main, nav, footer roles
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Live Regions:</strong> Announce dynamic content changes
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Alt Text:</strong> Descriptive alternative text for images and icons
+                </div>
+            </div>
+        </div>
+
+        <div class="accessibility-checklist">
+            <h3>Visual Design</h3>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Color Contrast:</strong> Minimum 4.5:1 ratio for normal text, 3:1 for large text
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Color Independence:</strong> Information not conveyed by color alone
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Text Scaling:</strong> Content readable at 200% zoom without horizontal scrolling
+                </div>
+            </div>
+            <div class="checklist-item">
+                <i class="fas fa-check checklist-icon"></i>
+                <div>
+                    <strong>Motion Sensitivity:</strong> Respect prefers-reduced-motion settings
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best Practices Section -->
+    <section id="best-practices" class="doc-section">
+        <h2 class="section-title">Best Practices</h2>
+        <p class="section-description">Guidelines for creating consistent and user-friendly interfaces.</p>
+        
+        <div class="do-dont">
+            <div class="do-section">
+                <h4><i class="fas fa-check me-2"></i>Do</h4>
+                <ul>
+                    <li>Use consistent terminology throughout the application</li>
+                    <li>Provide clear error messages with actionable solutions</li>
+                    <li>Show loading states for operations taking more than 1 second</li>
+                    <li>Use progressive enhancement for better performance</li>
+                    <li>Implement auto-save for long forms</li>
+                    <li>Provide undo functionality for destructive actions</li>
+                    <li>Use familiar icons with text labels</li>
+                    <li>Maintain consistent spacing and alignment</li>
+                </ul>
+            </div>
+            <div class="dont-section">
+                <h4><i class="fas fa-times me-2"></i>Don't</h4>
+                <ul>
+                    <li>Use technical jargon in user-facing messages</li>
+                    <li>Hide important actions behind multiple clicks</li>
+                    <li>Use color as the only way to convey information</li>
+                    <li>Create forms with more than 7 fields without grouping</li>
+                    <li>Use auto-playing media or animations</li>
+                    <li>Implement hover-only interactions on touch devices</li>
+                    <li>Use placeholder text as labels</li>
+                    <li>Create buttons smaller than 44px on mobile</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Responsive UX Section -->
+    <section id="responsive-ux" class="doc-section">
+        <h2 class="section-title">Responsive UX</h2>
+        <p class="section-description">Guidelines for creating optimal experiences across all device sizes.</p>
+        
+        <div class="component-showcase">
+            <div class="component-example">
+                <h4>Mobile-First Approach</h4>
+                <p>Design for mobile devices first, then enhance for larger screens:</p>
+                <ul>
+                    <li><strong>Touch Targets:</strong> Minimum 44px for interactive elements</li>
+                    <li><strong>Navigation:</strong> Collapsible menu with clear hierarchy</li>
+                    <li><strong>Content Priority:</strong> Most important content visible first</li>
+                    <li><strong>Form Design:</strong> Single column layout with large input fields</li>
+                </ul>
+            </div>
+            
+            <div class="component-example">
+                <h4>Tablet Optimization</h4>
+                <p>Leverage additional screen space while maintaining touch-friendly design:</p>
+                <ul>
+                    <li><strong>Layout:</strong> Two-column layouts where appropriate</li>
+                    <li><strong>Navigation:</strong> Expanded menu options</li>
+                    <li><strong>Tables:</strong> Show more columns with horizontal scrolling</li>
+                    <li><strong>Modals:</strong> Larger dialogs with more content</li>
+                </ul>
+            </div>
+            
+            <div class="component-example">
+                <h4>Desktop Enhancement</h4>
+                <p>Take advantage of larger screens and precise input methods:</p>
+                <ul>
+                    <li><strong>Layout:</strong> Multi-column layouts and sidebars</li>
+                    <li><strong>Hover States:</strong> Rich hover interactions and tooltips</li>
+                    <li><strong>Keyboard Shortcuts:</strong> Power user features</li>
+                    <li><strong>Data Density:</strong> More information per screen</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>

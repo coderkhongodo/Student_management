@@ -3,109 +3,196 @@
     ViewData["Title"] = "Quản lý lịch thi";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-calendar-alt"></i> Quản lý lịch thi</h2>
-    <a href="@Url.Action("CreateSchedule")" class="btn btn-success">
-        <i class="fas fa-plus"></i> Tạo lịch thi mới
-    </a>
+@section Styles {
+    <link href="~/css/admin-ui.css" rel="stylesheet" />
+    <link href="~/css/teacher-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+}
+
+<div class="teacher-page-container">
+<!-- Welcome Header with Animation -->
+<div class="welcome-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="position-relative z-index-2">
+            <h2 class="mb-2 animate__animated animate__fadeInLeft fw-bold">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Quản lý lịch thi 📅
+            </h2>
+            <p class="mb-0 opacity-75">Lên lịch và quản lý các buổi thi cho bài kiểm tra</p>
+        </div>
+        <div class="text-end position-relative z-index-2">
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-light rounded-pill px-3" id="calendarViewBtn">
+                    <i class="fas fa-calendar me-2"></i>Lịch
+                </button>
+                <a href="@Url.Action("CreateSchedule")" class="btn btn-light btn-lg px-4 py-2 rounded-pill shadow-sm">
+                    <i class="fas fa-plus me-2"></i>Tạo lịch thi mới
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="card">
+<!-- Calendar View Toggle -->
+<div class="admin-action-card mb-4" id="calendarView" style="display: none;">
+    <div class="card-header">
+        <h6 class="mb-0 fw-bold">
+            <i class="fas fa-calendar me-2"></i>Xem theo lịch
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="calendar-container">
+            <div class="text-center py-4">
+                <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chế độ xem lịch</h5>
+                <p class="text-muted">Tính năng này sẽ được phát triển trong phiên bản tiếp theo</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="admin-action-card animate__animated animate__fadeInUp">
+    <div class="card-header">
+        <h5 class="mb-0 fw-bold">
+            <i class="fas fa-list me-2"></i> Danh sách lịch thi
+        </h5>
+    </div>
     <div class="card-body">
         @if (Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Bài kiểm tra</th>
-                            <th>Lớp học</th>
-                            <th>Thời gian</th>
-                            <th>Thời lượng</th>
-                            <th>Địa điểm</th>
-                            <th>Số bài nộp</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
+                <table class="table table-hover">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #a8e6cf, #7fcdcd); color: #2e7d32;">
+                            <th class="border-0 fw-bold">Bài kiểm tra</th>
+                            <th class="border-0 fw-bold">Lớp học</th>
+                            <th class="border-0 fw-bold">Thời gian</th>
+                            <th class="border-0 fw-bold">Thời lượng</th>
+                            <th class="border-0 fw-bold">Địa điểm</th>
+                            <th class="border-0 fw-bold text-center">Bài nộp</th>
+                            <th class="border-0 fw-bold text-center">Trạng thái</th>
+                            <th class="border-0 fw-bold text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var schedule in Model)
                         {
-                            <tr>
+                            <tr class="animate__animated animate__fadeIn" style="animation-delay: @(Model.ToList().IndexOf(schedule) * 0.1)s;">
                                 <td>
-                                    <strong>@schedule.Exam.Title</strong>
-                                    @if (!string.IsNullOrEmpty(schedule.Exam.Description))
-                                    {
-                                        <br><small class="text-muted">@(schedule.Exam.Description.Length > 30 ? schedule.Exam.Description.Substring(0, 30) + "..." : schedule.Exam.Description)</small>
-                                    }
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 35px; height: 35px; background: linear-gradient(135deg, #ff9a9e, #fecfef);">
+                                                <i class="fas fa-file-alt text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-primary">@schedule.Exam.Title</div>
+                                            @if (!string.IsNullOrEmpty(schedule.Exam.Description))
+                                            {
+                                                <small class="text-muted">@(schedule.Exam.Description.Length > 30 ? schedule.Exam.Description.Substring(0, 30) + "..." : schedule.Exam.Description)</small>
+                                            }
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-primary">@schedule.ClassName</span>
-                                    @if (schedule.Class != null)
-                                    {
-                                        <br><small class="text-muted">@schedule.Class.ClassStudents.Count sinh viên</small>
-                                    }
+                                    <div class="class-info">
+                                        <span class="class-badge">@schedule.ClassName</span>
+                                        @if (schedule.Class != null)
+                                        {
+                                            <div class="student-count">
+                                                <i class="fas fa-users me-1"></i>@schedule.Class.ClassStudents.Count sinh viên
+                                            </div>
+                                        }
+                                    </div>
                                 </td>
                                 <td>
-                                    <strong>@schedule.StartTime.ToString("dd/MM/yyyy")</strong><br>
-                                    <small>@schedule.StartTime.ToString("HH:mm") - @schedule.EndTime.ToString("HH:mm")</small>
+                                    <div class="time-info">
+                                        <div class="date-display">@schedule.StartTime.ToString("dd/MM/yyyy")</div>
+                                        <div class="time-range">@schedule.StartTime.ToString("HH:mm") - @schedule.EndTime.ToString("HH:mm")</div>
+                                    </div>
                                 </td>
-                                <td>
-                                    <span class="badge bg-info">@schedule.DurationMinutes phút</span>
+                                <td class="text-center">
+                                    <span class="badge bg-info rounded-pill px-3">
+                                        <i class="fas fa-clock me-1"></i>@schedule.DurationMinutes phút
+                                    </span>
                                 </td>
                                 <td>
                                     @if (!string.IsNullOrEmpty(schedule.Location))
                                     {
-                                        <span>@schedule.Location</span>
+                                        <div class="location-info">
+                                            <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                                            <span>@schedule.Location</span>
+                                        </div>
                                     }
                                     else
                                     {
-                                        <span class="text-muted">Chưa xác định</span>
+                                        <span class="text-muted fst-italic">
+                                            <i class="fas fa-question-circle me-1"></i>Chưa xác định
+                                        </span>
                                     }
                                 </td>
-                                <td>
-                                    <span class="badge bg-secondary">@schedule.Submissions.Count bài</span>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary rounded-pill px-3">
+                                        <i class="fas fa-paper-plane me-1"></i>@schedule.Submissions.Count bài
+                                    </span>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     @{
                                         var now = DateTime.Now;
                                         var status = "";
                                         var badgeClass = "";
-                                        
+                                        var icon = "";
+
                                         if (now < schedule.StartTime)
                                         {
                                             status = "Chưa bắt đầu";
                                             badgeClass = "bg-warning";
+                                            icon = "fas fa-clock";
                                         }
                                         else if (now >= schedule.StartTime && now <= schedule.EndTime)
                                         {
                                             status = "Đang diễn ra";
                                             badgeClass = "bg-success";
+                                            icon = "fas fa-play-circle";
                                         }
                                         else
                                         {
                                             status = "Đã kết thúc";
                                             badgeClass = "bg-secondary";
+                                            icon = "fas fa-check-circle";
                                         }
                                     }
-                                    <span class="badge @badgeClass">@status</span>
+                                    <span class="badge @badgeClass rounded-pill px-3">
+                                        <i class="@icon me-1"></i>@status
+                                    </span>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <div class="btn-group" role="group">
                                         @if (DateTime.Now < schedule.StartTime)
                                         {
-                                            <a href="@Url.Action("EditSchedule", new { id = schedule.Id })" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-edit"></i> Sửa
+                                            <a href="@Url.Action("EditSchedule", new { id = schedule.Id })"
+                                               class="btn btn-sm btn-outline-primary rounded-pill me-1"
+                                               data-bs-toggle="tooltip"
+                                               title="Chỉnh sửa lịch thi">
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                         }
                                         @if (schedule.Submissions.Any())
                                         {
-                                            <a href="@Url.Action("Grading", new { scheduleId = schedule.Id })" class="btn btn-sm btn-outline-success">
-                                                <i class="fas fa-star"></i> Chấm điểm
+                                            <a href="@Url.Action("Grading", new { scheduleId = schedule.Id })"
+                                               class="btn btn-sm btn-outline-success rounded-pill me-1"
+                                               data-bs-toggle="tooltip"
+                                               title="Chấm điểm bài thi">
+                                                <i class="fas fa-star"></i>
                                             </a>
                                         }
-                                        <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#detailModal-@schedule.Id">
-                                            <i class="fas fa-eye"></i> Xem
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-info rounded-pill me-1"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#detailModal-@schedule.Id"
+                                                title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
                                         </button>
                                         @if (!schedule.Submissions.Any() && DateTime.Now < schedule.StartTime)
                                         {
@@ -184,20 +271,165 @@
             </div>
         </div>
     </div>
-    
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.Sum(s => s.Submissions.Count)</h4>
-                        <p class="mb-0">Bài đã nộp</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-file-upload fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
+
+<style>
+    .table tbody tr {
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(168, 230, 207, 0.1) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .class-badge {
+        background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .student-count {
+        font-size: 11px;
+        color: #666;
+        margin-top: 4px;
+    }
+
+    .time-info {
+        text-align: center;
+    }
+
+    .date-display {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 2px;
+    }
+
+    .time-range {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .location-info {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .avatar-sm {
+        transition: all 0.3s ease;
+    }
+
+    .avatar-sm:hover {
+        transform: scale(1.05);
+    }
+
+    .badge {
+        transition: all 0.3s ease;
+    }
+
+    .badge:hover {
+        transform: scale(1.05);
+    }
+
+    .empty-state {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .empty-state-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .calendar-container {
+        min-height: 200px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border: 2px dashed #dee2e6;
+    }
+</style>
+
+@section Scripts {
+<script>
+    // Enhanced Teacher Schedules Page Interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize components
+        initializeCalendarView();
+        initializeAnimations();
+        initializeTooltips();
+    });
+
+    function initializeCalendarView() {
+        const calendarViewBtn = document.getElementById('calendarViewBtn');
+        const calendarView = document.getElementById('calendarView');
+
+        if (calendarViewBtn && calendarView) {
+            calendarViewBtn.addEventListener('click', function() {
+                if (calendarView.style.display === 'none' || !calendarView.style.display) {
+                    calendarView.style.display = 'block';
+                    calendarView.classList.add('animate__animated', 'animate__fadeInDown');
+                    this.innerHTML = '<i class="fas fa-list me-2"></i>Danh sách';
+                } else {
+                    calendarView.style.display = 'none';
+                    this.innerHTML = '<i class="fas fa-calendar me-2"></i>Lịch';
+                }
+            });
+        }
+    }
+
+    function initializeAnimations() {
+        // Animate table rows
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.animationDelay = (index * 0.05) + 's';
+        });
+    }
+
+    function initializeTooltips() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @@keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .animate__fadeInDown {
+            animation-duration: 0.5s;
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+}
+</div> <!-- End teacher-page-container -->

@@ -1,0 +1,503 @@
+@{
+    ViewData["Title"] = "Deployment Checklist";
+    Layout = "_DocumentationLayout";
+}
+
+@section Styles {
+    <link href="~/css/documentation.css" rel="stylesheet" />
+    <style>
+        .checklist-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 4px solid #7fcdcd;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .checklist-checkbox {
+            margin-right: 1rem;
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+        }
+        
+        .priority-high {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .priority-medium {
+            border-left: 4px solid #ffc107;
+        }
+        
+        .priority-low {
+            border-left: 4px solid #28a745;
+        }
+        
+        .code-block {
+            background: #212529;
+            color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .environment-config {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .security-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .performance-tip {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+}
+
+<div class="documentation-container">
+    <!-- Header -->
+    <div class="doc-header">
+        <h1 class="doc-title">
+            <i class="fas fa-rocket me-3"></i>
+            Deployment Checklist
+        </h1>
+        <p class="doc-subtitle">Complete guide for deploying Student Management System to production</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="doc-toc">
+        <h3>Table of Contents</h3>
+        <ul>
+            <li><a href="#pre-deployment">Pre-Deployment Setup</a></li>
+            <li><a href="#environment">Environment Configuration</a></li>
+            <li><a href="#security">Security Checklist</a></li>
+            <li><a href="#performance">Performance Optimization</a></li>
+            <li><a href="#monitoring">Monitoring & Logging</a></li>
+            <li><a href="#post-deployment">Post-Deployment Verification</a></li>
+        </ul>
+    </div>
+
+    <!-- Pre-Deployment Setup -->
+    <section id="pre-deployment" class="doc-section">
+        <h2 class="section-title">Pre-Deployment Setup</h2>
+        <p class="section-description">Essential steps before deploying to production environment.</p>
+        
+        <div class="checklist-section">
+            <h3>Code Preparation</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Code Review Complete</strong>
+                    <p class="mb-0">All code changes have been reviewed and approved</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Unit Tests Passing</strong>
+                    <p class="mb-0">All unit tests pass with minimum 80% code coverage</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Integration Tests Complete</strong>
+                    <p class="mb-0">End-to-end testing completed successfully</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Performance Testing</strong>
+                    <p class="mb-0">Load testing completed with acceptable response times</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Database Preparation</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Database Backup</strong>
+                    <p class="mb-0">Current production database backed up</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Migration Scripts Tested</strong>
+                    <p class="mb-0">Database migration scripts tested on staging environment</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Rollback Plan</strong>
+                    <p class="mb-0">Database rollback procedures documented and tested</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Environment Configuration -->
+    <section id="environment" class="doc-section">
+        <h2 class="section-title">Environment Configuration</h2>
+        <p class="section-description">Production environment setup and configuration.</p>
+        
+        <div class="environment-config">
+            <h4><i class="fas fa-server me-2"></i>Production Environment Variables</h4>
+            <div class="code-block">
+# Database Configuration
+ConnectionStrings__DefaultConnection=Server=prod-server;Database=StudentManagementDB;Trusted_Connection=true;
+
+# Application Settings
+ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_URLS=https://+:443;http://+:80
+
+# Security
+JWT_SECRET_KEY=your-super-secure-jwt-secret-key-here
+ENCRYPTION_KEY=your-encryption-key-here
+
+# Email Configuration
+SMTP_HOST=smtp.yourdomain.com
+SMTP_PORT=587
+SMTP_USERNAME=noreply@yourdomain.com
+SMTP_PASSWORD=your-smtp-password
+
+# Logging
+SERILOG_MINIMUM_LEVEL=Information
+LOG_FILE_PATH=/var/log/studentmanagement/
+
+# Performance
+CACHE_EXPIRATION_MINUTES=30
+MAX_UPLOAD_SIZE_MB=10
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Server Configuration</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>SSL Certificate Installed</strong>
+                    <p class="mb-0">Valid SSL certificate configured and tested</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Firewall Configured</strong>
+                    <p class="mb-0">Only necessary ports open (80, 443, SSH)</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Load Balancer Setup</strong>
+                    <p class="mb-0">Load balancer configured for high availability</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>CDN Configuration</strong>
+                    <p class="mb-0">Static assets served through CDN</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Checklist -->
+    <section id="security" class="doc-section">
+        <h2 class="section-title">Security Checklist</h2>
+        <p class="section-description">Critical security measures for production deployment.</p>
+        
+        <div class="security-warning">
+            <h4><i class="fas fa-exclamation-triangle me-2"></i>Security Warning</h4>
+            <p class="mb-0">All security items marked as HIGH priority must be completed before production deployment.</p>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Authentication & Authorization</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Strong Password Policy</strong>
+                    <p class="mb-0">Minimum 8 characters, mixed case, numbers, special characters</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>JWT Secret Rotation</strong>
+                    <p class="mb-0">Production JWT secrets different from development</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Role-Based Access Control</strong>
+                    <p class="mb-0">All endpoints properly secured with role checks</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Session Timeout</strong>
+                    <p class="mb-0">Appropriate session timeout configured (30 minutes)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Data Protection</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Database Encryption</strong>
+                    <p class="mb-0">Sensitive data encrypted at rest</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>HTTPS Enforcement</strong>
+                    <p class="mb-0">All HTTP traffic redirected to HTTPS</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Input Validation</strong>
+                    <p class="mb-0">All user inputs validated and sanitized</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>CSRF Protection</strong>
+                    <p class="mb-0">Anti-forgery tokens implemented on all forms</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Security Headers</h3>
+            <div class="code-block">
+# Add to web.config or startup configuration
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+Content-Security-Policy: default-src 'self'
+Referrer-Policy: strict-origin-when-cross-origin
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Optimization -->
+    <section id="performance" class="doc-section">
+        <h2 class="section-title">Performance Optimization</h2>
+        <p class="section-description">Optimize application performance for production workloads.</p>
+        
+        <div class="performance-tip">
+            <h4><i class="fas fa-tachometer-alt me-2"></i>Performance Target</h4>
+            <p class="mb-0">Target: Page load time < 3 seconds, API response time < 500ms</p>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Caching Strategy</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Response Caching</strong>
+                    <p class="mb-0">Static content cached with appropriate headers</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Database Query Caching</strong>
+                    <p class="mb-0">Frequently accessed data cached in memory</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Redis Cache</strong>
+                    <p class="mb-0">Distributed cache configured for scalability</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Asset Optimization</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>CSS/JS Minification</strong>
+                    <p class="mb-0">All CSS and JavaScript files minified</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Image Optimization</strong>
+                    <p class="mb-0">Images compressed and served in modern formats</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Gzip Compression</strong>
+                    <p class="mb-0">Server-side compression enabled</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Monitoring & Logging -->
+    <section id="monitoring" class="doc-section">
+        <h2 class="section-title">Monitoring & Logging</h2>
+        <p class="section-description">Set up comprehensive monitoring and logging for production.</p>
+        
+        <div class="checklist-section">
+            <h3>Application Monitoring</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Health Check Endpoints</strong>
+                    <p class="mb-0">Health check endpoints configured and tested</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Error Tracking</strong>
+                    <p class="mb-0">Application errors tracked and alerted</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Performance Metrics</strong>
+                    <p class="mb-0">Response times and throughput monitored</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Infrastructure Monitoring</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Server Resources</strong>
+                    <p class="mb-0">CPU, memory, disk usage monitored</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Database Performance</strong>
+                    <p class="mb-0">Database query performance and connections monitored</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Network Monitoring</strong>
+                    <p class="mb-0">Network latency and bandwidth monitored</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Post-Deployment Verification -->
+    <section id="post-deployment" class="doc-section">
+        <h2 class="section-title">Post-Deployment Verification</h2>
+        <p class="section-description">Verify successful deployment and system functionality.</p>
+        
+        <div class="checklist-section">
+            <h3>Functional Testing</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>User Authentication</strong>
+                    <p class="mb-0">Login/logout functionality working correctly</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Core Features</strong>
+                    <p class="mb-0">All major features tested and working</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Database Connectivity</strong>
+                    <p class="mb-0">Database operations working correctly</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Email Notifications</strong>
+                    <p class="mb-0">Email system functioning properly</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist-section">
+            <h3>Performance Verification</h3>
+            <div class="checklist-item priority-high">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Page Load Times</strong>
+                    <p class="mb-0">All pages load within acceptable time limits</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Mobile Responsiveness</strong>
+                    <p class="mb-0">Mobile experience tested and working</p>
+                </div>
+            </div>
+            <div class="checklist-item priority-medium">
+                <input type="checkbox" class="checklist-checkbox">
+                <div>
+                    <strong>Cross-Browser Testing</strong>
+                    <p class="mb-0">Functionality verified across major browsers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

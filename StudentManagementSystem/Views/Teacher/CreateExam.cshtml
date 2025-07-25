@@ -3,26 +3,52 @@
     ViewData["Title"] = "Tạo bài kiểm tra mới";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h4><i class="fas fa-plus"></i> Tạo bài kiểm tra mới</h4>
+@section Styles {
+    <link href="~/css/teacher-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+}
+
+<div class="teacher-page-container">
+    <!-- Welcome Header -->
+    <div class="welcome-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="position-relative z-index-2">
+                <h2 class="mb-2 fw-bold">
+                    <i class="fas fa-file-plus me-2"></i>
+                    Tạo bài kiểm tra mới 📝
+                </h2>
+                <p class="mb-0 opacity-75">Tạo bài kiểm tra mới cho lớp học của bạn</p>
             </div>
+            <div class="text-end position-relative z-index-2">
+                <a href="@Url.Action("Exams")" class="btn btn-light btn-lg px-4 py-2 rounded-pill shadow-sm">
+                    <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h5 class="mb-0 text-success fw-bold">
+                        <i class="fas fa-file-plus me-2"></i> Thông tin bài kiểm tra
+                    </h5>
+                </div>
             <div class="card-body">
-                <form asp-action="CreateExam" method="post" enctype="multipart/form-data">
-                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="SubjectId" class="form-label"></label>
-                        <select asp-for="SubjectId" class="form-select">
+                <form asp-action="CreateExam" method="post" enctype="multipart/form-data" class="form-modern">
+                    <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
+                    <div class="form-group-modern">
+                        <label asp-for="SubjectId" class="form-label-modern"></label>
+                        <select asp-for="SubjectId" class="form-control-modern">
                             <option value="">-- Chọn môn học --</option>
                             @foreach (var subject in ViewBag.Subjects as IEnumerable<StudentManagementSystem.Models.Subject>)
                             {
                                 <option value="@subject.Id">@subject.SubjectName (@subject.SubjectCode)</option>
                             }
                         </select>
-                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                        <span asp-validation-for="SubjectId" class="form-error"></span>
                     </div>
 
                     <div class="mb-3">
@@ -129,3 +155,4 @@
         });
     </script>
 }
+</div> <!-- End teacher-page-container -->

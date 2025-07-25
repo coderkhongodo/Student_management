@@ -3,27 +3,37 @@
     ViewData["Title"] = "Chi tiết lớp học";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-school"></i> @Model.Class.ClassName</h2>
-    <div>
-        <div class="btn-group" role="group">
-            <a href="@Url.Action("CreateAttendanceSession", new { classId = Model.Class.Id })" class="btn btn-success">
-                <i class="fas fa-plus"></i> Tạo buổi học
-            </a>
-            <a href="@Url.Action("StudentGrades", new { classId = Model.Class.Id })" class="btn btn-warning">
-                <i class="fas fa-star"></i> Quản lý điểm
-            </a>
-        </div>
-        <div class="btn-group ms-2" role="group">
-            <a href="@Url.Action("ExportAttendanceReport", new { classId = Model.Class.Id })" class="btn btn-info">
-                <i class="fas fa-file-excel"></i> Xuất Excel
-            </a>
-            <a href="@Url.Action("MyClasses")" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Quay lại
-            </a>
+@section Styles {
+    <link href="~/css/teacher-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+}
+
+<div class="teacher-page-container">
+    <!-- Welcome Header -->
+    <div class="welcome-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="position-relative z-index-2">
+                <h2 class="mb-2 animate__animated animate__fadeInLeft fw-bold">
+                    <i class="fas fa-school me-2"></i>
+                    @Model.Class.ClassName 🏫
+                </h2>
+                <p class="mb-0 opacity-75">Chi tiết thông tin lớp học và quản lý sinh viên</p>
+            </div>
+            <div class="text-end position-relative z-index-2">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="@Url.Action("CreateAttendanceSession", new { classId = Model.Class.Id })" class="btn btn-light btn-lg px-4 py-2 rounded-pill shadow-sm">
+                        <i class="fas fa-plus me-2"></i>Tạo buổi học
+                    </a>
+                    <a href="@Url.Action("StudentGrades", new { classId = Model.Class.Id })" class="btn btn-outline-light btn-lg px-4 py-2 rounded-pill">
+                        <i class="fas fa-star me-2"></i>Quản lý điểm
+                    </a>
+                    <a href="@Url.Action("MyClasses")" class="btn btn-outline-light btn-lg px-4 py-2 rounded-pill">
+                        <i class="fas fa-arrow-left me-2"></i>Quay lại
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
 @if (TempData["Success"] != null)
 {
@@ -320,3 +330,4 @@
         }, 30000);
     </script>
 }
+</div> <!-- End teacher-page-container -->

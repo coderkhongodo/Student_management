@@ -3,15 +3,33 @@
     ViewData["Title"] = "Lớp học của tôi";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-chalkboard-teacher"></i> Lớp học của tôi</h2>
-    <div>
-        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filterModal">
-            <i class="fas fa-filter"></i> Lọc
-        </button>
-        <a href="@Url.Action("CreateExam")" class="btn btn-success">
-            <i class="fas fa-plus"></i> Tạo bài thi mới
-        </a>
+@section Styles {
+    <link href="~/css/admin-ui.css" rel="stylesheet" />
+    <link href="~/css/teacher-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+}
+
+<div class="teacher-page-container">
+<!-- Welcome Header with Animation -->
+<div class="welcome-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="position-relative z-index-2">
+            <h2 class="mb-2 animate__animated animate__fadeInLeft fw-bold">
+                <i class="fas fa-chalkboard-teacher me-2"></i>
+                Lớp học của tôi 🏫
+            </h2>
+            <p class="mb-0 opacity-75">Quản lý và theo dõi các lớp học bạn đang giảng dạy</p>
+        </div>
+        <div class="text-end position-relative z-index-2">
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-light rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#filterModal">
+                    <i class="fas fa-filter me-2"></i>Lọc
+                </button>
+                <a href="@Url.Action("CreateExam")" class="btn btn-light btn-lg px-4 py-2 rounded-pill shadow-sm">
+                    <i class="fas fa-plus me-2"></i>Tạo bài thi mới
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -71,117 +89,146 @@
     </div>
 }
 
-<div class="row">
-    @if (Model.Any())
-    {
-        @foreach (var classItem in Model)
+<div class="admin-action-card animate__animated animate__fadeInUp mb-4">
+    <div class="card-header">
+        <h5 class="mb-0 fw-bold">
+            <i class="fas fa-list me-2"></i> Danh sách lớp học
+        </h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
         {
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-school"></i> @classItem.ClassName
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">
-                            @foreach (var classSubject in classItem.ClassSubjects)
-                            {
-                                <span class="badge bg-secondary me-1">@classSubject.Subject.SubjectName (@classSubject.Subject.SubjectCode)</span>
-                            }
-                        </h6>
-                        
-                        <div class="mb-3">
-                            <small class="text-muted">
-                                <i class="fas fa-calendar"></i> @classItem.Semester - @classItem.Year
-                            </small>
-                        </div>
+            <div class="row g-4">
+                @foreach (var classItem in Model)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="class-card animate__animated animate__fadeIn" style="animation-delay: @(Model.ToList().IndexOf(classItem) * 0.1)s;">
+                            <div class="class-card-header" style="background: linear-gradient(135deg, #a8e6cf, #7fcdcd);">
+                                <div class="class-icon">
+                                    <i class="fas fa-school"></i>
+                                </div>
+                                <div class="class-info">
+                                    <h5 class="class-name">@classItem.ClassName</h5>
+                                    <p class="class-semester">@classItem.Semester - @classItem.Year</p>
+                                </div>
+                            </div>
 
-                        <div class="row text-center mb-3">
-                            <div class="col-4">
-                                <div class="border-end">
-                                    <h6 class="text-primary mb-0">@classItem.ClassStudents.Count(cs => cs.IsActive)</h6>
-                                    <small class="text-muted">Sinh viên</small>
+                            <div class="class-card-body">
+                                <div class="subjects-section mb-3">
+                                    <h6 class="section-title">Môn học</h6>
+                                    <div class="subjects-list">
+                                        @foreach (var classSubject in classItem.ClassSubjects)
+                                        {
+                                            <span class="subject-badge">
+                                                @classSubject.Subject.SubjectName
+                                                <small>(@classSubject.Subject.SubjectCode)</small>
+                                            </span>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="border-end">
-                                    <h6 class="text-success mb-0">@classItem.AttendanceSessions.Count</h6>
-                                    <small class="text-muted">Buổi học</small>
+
+                                <div class="stats-section mb-3">
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <div class="stat-number text-primary">@classItem.ClassStudents.Count(cs => cs.IsActive)</div>
+                                                <div class="stat-label">Sinh viên</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="stat-item">
+                                                <div class="stat-number text-success">@classItem.AttendanceSessions.Count</div>
+                                                <div class="stat-label">Buổi học</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            @{
+                                                var totalSessions = classItem.AttendanceSessions.Count;
+                                                var totalStudents = classItem.ClassStudents.Count(cs => cs.IsActive);
+                                                var totalPossible = totalSessions * totalStudents;
+                                                var totalPresent = classItem.AttendanceSessions.SelectMany(ats => ats.Attendances).Count(a => a.IsPresent);
+                                                var attendanceRate = totalPossible > 0 ? (decimal)totalPresent / totalPossible * 100 : 0;
+                                            }
+                                            <div class="stat-item">
+                                                <div class="stat-number text-info">@attendanceRate.ToString("F1")%</div>
+                                                <div class="stat-label">Điểm danh</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-4">
-                                @{
-                                    var totalSessions = classItem.AttendanceSessions.Count;
-                                    var totalStudents = classItem.ClassStudents.Count(cs => cs.IsActive);
-                                    var totalPossible = totalSessions * totalStudents;
-                                    var totalPresent = classItem.AttendanceSessions.SelectMany(ats => ats.Attendances).Count(a => a.IsPresent);
-                                    var attendanceRate = totalPossible > 0 ? (decimal)totalPresent / totalPossible * 100 : 0;
+
+                                @if (!string.IsNullOrEmpty(classItem.Description))
+                                {
+                                    <div class="description-section mb-3">
+                                        <h6 class="section-title">Mô tả</h6>
+                                        <p class="description-text">@classItem.Description</p>
+                                    </div>
                                 }
-                                <h6 class="text-info mb-0">@attendanceRate.ToString("F1")%</h6>
-                                <small class="text-muted">Điểm danh</small>
+
+                                <div class="status-section mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        @if (classItem.IsActive)
+                                        {
+                                            <span class="status-badge status-active">
+                                                <i class="fas fa-check-circle me-1"></i>Hoạt động
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge status-inactive">
+                                                <i class="fas fa-pause-circle me-1"></i>Ngừng hoạt động
+                                            </span>
+                                        }
+
+                                        <small class="capacity-info">
+                                            <i class="fas fa-users me-1"></i>Tối đa: @classItem.MaxStudents sinh viên
+                                        </small>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
 
-                        @if (!string.IsNullOrEmpty(classItem.Description))
-                        {
-                            <p class="card-text">
-                                <small>@classItem.Description</small>
-                            </p>
-                        }
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            @if (classItem.IsActive)
-                            {
-                                <span class="badge bg-success">Hoạt động</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Ngừng hoạt động</span>
-                            }
-                            
-                            <small class="text-muted">
-                                Tối đa: @classItem.MaxStudents sinh viên
-                            </small>
+                            <div class="class-card-footer">
+                                <div class="action-buttons">
+                                    <a href="@Url.Action("ClassDetails", new { id = classItem.Id })" class="action-btn primary-btn">
+                                        <i class="fas fa-eye me-1"></i>Chi tiết
+                                    </a>
+                                    <a href="@Url.Action("CreateAttendanceSession", new { classId = classItem.Id })" class="action-btn success-btn">
+                                        <i class="fas fa-plus me-1"></i>Buổi học
+                                    </a>
+                                    <a href="@Url.Action("CreateExam")" class="action-btn info-btn">
+                                        <i class="fas fa-file-plus me-1"></i>Bài thi
+                                    </a>
+                                    <a href="@Url.Action("StudentGrades", new { classId = classItem.Id })" class="action-btn warning-btn">
+                                        <i class="fas fa-star me-1"></i>Điểm số
+                                    </a>
+                                    <a href="@Url.Action("ExportAttendance", new { classId = classItem.Id })" class="action-btn outline-btn">
+                                        <i class="fas fa-file-excel me-1"></i>Excel
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="d-grid gap-2">
-                            <a href="@Url.Action("ClassDetails", new { id = classItem.Id })" class="btn btn-primary btn-sm">
-                                <i class="fas fa-eye"></i> Xem chi tiết
-                            </a>
-                            <div class="btn-group" role="group">
-                                <a href="@Url.Action("CreateAttendanceSession", new { classId = classItem.Id })" class="btn btn-success btn-sm">
-                                    <i class="fas fa-plus"></i> Tạo buổi học
-                                </a>
-                                <a href="@Url.Action("CreateExam")" class="btn btn-info btn-sm">
-                                    <i class="fas fa-file-plus"></i> Tạo bài thi
-                                </a>
-                            </div>
-                            <div class="btn-group" role="group">
-                                <a href="@Url.Action("StudentGrades", new { classId = classItem.Id })" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-star"></i> Quản lý điểm
-                                </a>
-                                <a href="@Url.Action("ExportAttendance", new { classId = classItem.Id })" class="btn btn-outline-success btn-sm">
-                                    <i class="fas fa-file-excel"></i> Xuất Excel
-                                </a>
-                            </div>
-                        </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div class="empty-state">
+                    <div class="empty-state-icon mb-4">
+                        <i class="fas fa-chalkboard-teacher fa-4x" style="color: #a8e6cf;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Bạn chưa được phân công lớp học nào</h4>
+                    <p class="text-muted mb-4">Liên hệ với quản trị viên để được phân công lớp học.</p>
+                    <div class="text-muted">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Lớp học sẽ được phân công bởi quản trị viên
                     </div>
                 </div>
             </div>
         }
-    }
-    else
-    {
-        <div class="col-12">
-            <div class="text-center py-5">
-                <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">Bạn chưa được phân công lớp học nào</h5>
-                <p class="text-muted">Liên hệ với quản trị viên để được phân công lớp học.</p>
-            </div>
-        </div>
-    }
+    </div>
+</div>
 </div>
 
 @section Scripts {
@@ -244,3 +291,262 @@
         }
     </script>
 }
+
+<style>
+    .class-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .class-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .class-card-header {
+        padding: 20px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .class-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .class-name {
+        margin: 0;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .class-semester {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 14px;
+    }
+
+    .class-card-body {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-title {
+        font-size: 14px;
+        font-weight: bold;
+        color: #666;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .subjects-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .subject-badge {
+        background: linear-gradient(135deg, #a8e6cf, #7fcdcd);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .stats-section .row {
+        margin: 0;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 10px 5px;
+    }
+
+    .stat-number {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .description-text {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .capacity-info {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .class-card-footer {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .action-btn {
+        padding: 6px 12px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .primary-btn {
+        background: #007bff;
+        color: white;
+    }
+
+    .primary-btn:hover {
+        background: #0056b3;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .success-btn {
+        background: #28a745;
+        color: white;
+    }
+
+    .success-btn:hover {
+        background: #1e7e34;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .info-btn {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .info-btn:hover {
+        background: #117a8b;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .warning-btn {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .warning-btn:hover {
+        background: #e0a800;
+        color: #212529;
+        transform: translateY(-2px);
+    }
+
+    .outline-btn {
+        background: transparent;
+        color: #28a745;
+        border: 1px solid #28a745;
+    }
+
+    .outline-btn:hover {
+        background: #28a745;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .empty-state-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .class-card-header {
+            padding: 15px;
+        }
+
+        .class-card-body {
+            padding: 15px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            justify-content: center;
+        }
+    }
+</style>
+</div> <!-- End teacher-page-container -->

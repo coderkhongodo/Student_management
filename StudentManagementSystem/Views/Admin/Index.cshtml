@@ -3,186 +3,484 @@
     ViewData["Title"] = "Bảng điều khiển Admin";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="fas fa-tachometer-alt"></i> Bảng điều khiển Admin</h2>
-</div>
+@section Styles {
+    <link href="~/css/admin-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+}
 
-<!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-md-2">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.TotalStudents</h4>
-                        <p class="mb-0">Học sinh</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-user-graduate fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="@Url.Action("Students")" class="text-white text-decoration-none">
-                    Xem chi tiết <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
+<div class="admin-page-container">
+<!-- Welcome Header with Animation -->
+<div class="welcome-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="position-relative z-index-2">
+            <h2 class="mb-2 animate__animated animate__fadeInLeft fw-bold">
+                <i class="fas fa-crown me-2"></i>
+                Chào mừng Admin! 👑
+            </h2>
+            <p class="mb-0 opacity-75">Quản lý toàn diện hệ thống giáo dục và theo dõi hoạt động</p>
         </div>
-    </div>
-    
-    <div class="col-md-2">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.TotalTeachers</h4>
-                        <p class="mb-0">Giảng viên</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-chalkboard-teacher fa-2x"></i>
-                    </div>
-                </div>
+        <div class="text-end position-relative z-index-2">
+            <div class="badge bg-white text-success fs-6 mb-2 px-3 py-2 rounded-pill">
+                <i class="fas fa-calendar me-1"></i> @DateTime.Now.ToString("dd/MM/yyyy")
             </div>
-            <div class="card-footer">
-                <a href="@Url.Action("Teachers")" class="text-white text-decoration-none">
-                    Xem chi tiết <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-2">
-        <div class="card bg-warning text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.TotalSubjects</h4>
-                        <p class="mb-0">Môn học</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-book fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="@Url.Action("Subjects")" class="text-white text-decoration-none">
-                    Xem chi tiết <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-2">
-        <div class="card bg-secondary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.TotalClasses</h4>
-                        <p class="mb-0">Lớp học</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-chalkboard fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="@Url.Action("Classes")" class="text-white text-decoration-none">
-                    Xem chi tiết <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-2">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.TotalExams</h4>
-                        <p class="mb-0">Bài kiểm tra</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-file-alt fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="@Url.Action("Exams")" class="text-white text-decoration-none">
-                    Xem chi tiết <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-2">
-        <div class="card bg-danger text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4>@Model.TotalSubmissions</h4>
-                        <p class="mb-0">Bài nộp</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-paper-plane fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <a href="@Url.Action("Grades")" class="text-white text-decoration-none">
-                    Xem điểm số <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
+            <br>
+            <small class="opacity-75">
+                <i class="fas fa-clock me-1"></i> @DateTime.Now.ToString("HH:mm")
+            </small>
         </div>
     </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="row">
-    <div class="col-md-6">
-        <div class="card">
+<!-- Quick Actions Bar -->
+<div class="quick-actions mb-4">
+    <div class="row g-2">
+        <div class="col-6 col-md-3">
+            <a href="@Url.Action("CreateStudent")" class="btn btn-outline-primary w-100 quick-action-btn">
+                <i class="fas fa-user-plus fa-lg mb-1"></i>
+                <br><small>Thêm SV</small>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="@Url.Action("CreateTeacher")" class="btn btn-outline-success w-100 quick-action-btn">
+                <i class="fas fa-chalkboard-teacher fa-lg mb-1"></i>
+                <br><small>Thêm GV</small>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="@Url.Action("CreateClass")" class="btn btn-outline-info w-100 quick-action-btn">
+                <i class="fas fa-plus fa-lg mb-1"></i>
+                <br><small>Thêm lớp</small>
+            </a>
+        </div>
+        <div class="col-6 col-md-3">
+            <a href="@Url.Action("CreateSubject")" class="btn btn-outline-warning w-100 quick-action-btn">
+                <i class="fas fa-book-plus fa-lg mb-1"></i>
+                <br><small>Thêm môn</small>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Statistics Cards -->
+<div class="container-fluid px-0">
+    <div class="row mb-4 g-3 justify-content-center mx-auto" style="max-width: 1200px;">
+        <!-- Students Card -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("Students")" class="text-decoration-none">
+                <div class="stat-card-modern stat-card-students">
+                    <div class="stat-card-content">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon-bg stat-icon-bg-blue">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">@Model.TotalStudents</div>
+                            <div class="stat-label">Học sinh</div>
+                            <div class="stat-description">Tổng số học sinh</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-footer">
+                        <span class="stat-link">Xem chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Teachers Card -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("Teachers")" class="text-decoration-none">
+                <div class="stat-card-modern stat-card-teachers">
+                    <div class="stat-card-content">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon-bg stat-icon-bg-green">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">@Model.TotalTeachers</div>
+                            <div class="stat-label">Giảng viên</div>
+                            <div class="stat-description">Tổng số giảng viên</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-footer">
+                        <span class="stat-link">Xem chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Subjects Card -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("Subjects")" class="text-decoration-none">
+                <div class="stat-card-modern stat-card-subjects">
+                    <div class="stat-card-content">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon-bg stat-icon-bg-orange">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">@Model.TotalSubjects</div>
+                            <div class="stat-label">Môn học</div>
+                            <div class="stat-description">Tổng số môn học</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-footer">
+                        <span class="stat-link">Xem chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Classes Card -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("Classes")" class="text-decoration-none">
+                <div class="stat-card-modern stat-card-classes">
+                    <div class="stat-card-content">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon-bg stat-icon-bg-purple">
+                                <i class="fas fa-chalkboard"></i>
+                            </div>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">@Model.TotalClasses</div>
+                            <div class="stat-label">Lớp học</div>
+                            <div class="stat-description">Tổng số lớp học</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-footer">
+                        <span class="stat-link">Xem chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Exams Card -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("Exams")" class="text-decoration-none">
+                <div class="stat-card-modern stat-card-exams">
+                    <div class="stat-card-content">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon-bg stat-icon-bg-teal">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">@Model.TotalExams</div>
+                            <div class="stat-label">Bài kiểm tra</div>
+                            <div class="stat-description">Tổng số bài kiểm tra</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-footer">
+                        <span class="stat-link">Xem chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Submissions Card -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("Grades")" class="text-decoration-none">
+                <div class="stat-card-modern stat-card-submissions">
+                    <div class="stat-card-content">
+                        <div class="stat-icon-wrapper">
+                            <div class="stat-icon-bg stat-icon-bg-red">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">@Model.TotalSubmissions</div>
+                            <div class="stat-label">Bài nộp</div>
+                            <div class="stat-description">Tổng số bài nộp</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-footer">
+                        <span class="stat-link">Xem chi tiết <i class="fas fa-arrow-right ms-1"></i></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Quick Actions -->
+<div class="row g-4 mt-3">
+    <div class="col-lg-6">
+        <div class="admin-action-card animate__animated animate__fadeInLeft">
             <div class="card-header">
-                <h5><i class="fas fa-users"></i> Quản lý người dùng</h5>
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-plus me-2"></i> Tạo mới & Thêm
+                </h5>
             </div>
             <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="@Url.Action("CreateSubject")" class="btn btn-warning">
-                        <i class="fas fa-plus"></i> Thêm môn học mới
+                <div class="d-grid gap-3">
+                    <a href="@Url.Action("CreateStudent")" class="admin-action-btn btn-primary-gradient">
+                        <i class="fas fa-user-plus"></i> Thêm học sinh mới
                     </a>
-                    <a href="@Url.Action("CreateClass")" class="btn btn-secondary">
+                    <a href="@Url.Action("CreateTeacher")" class="admin-action-btn btn-success-gradient">
+                        <i class="fas fa-chalkboard-teacher"></i> Thêm giảng viên mới
+                    </a>
+                    <a href="@Url.Action("CreateClass")" class="admin-action-btn btn-info-gradient">
                         <i class="fas fa-plus"></i> Thêm lớp học mới
                     </a>
-                    <a href="@Url.Action("CreateTeacher")" class="btn btn-success">
-                        <i class="fas fa-plus"></i> Thêm giảng viên mới
-                    </a>
-                    <a href="@Url.Action("CreateStudent")" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Thêm học sinh mới
+                    <a href="@Url.Action("CreateSubject")" class="admin-action-btn btn-warning-gradient">
+                        <i class="fas fa-book-plus"></i> Thêm môn học mới
                     </a>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-6">
-        <div class="card">
+
+    <div class="col-lg-6">
+        <div class="admin-action-card animate__animated animate__fadeInRight">
             <div class="card-header">
-                <h5><i class="fas fa-chart-bar"></i> Báo cáo</h5>
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-tasks me-2"></i> Quản lý & Báo cáo
+                </h5>
             </div>
             <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="@Url.Action("Subjects")" class="btn btn-warning">
-                        <i class="fas fa-book"></i> Quản lý môn học
+                <div class="d-grid gap-3">
+                    <a href="@Url.Action("Students")" class="admin-action-btn btn-primary-gradient">
+                        <i class="fas fa-users"></i> Quản lý học sinh
                     </a>
-                    <a href="@Url.Action("Classes")" class="btn btn-secondary">
-                        <i class="fas fa-chalkboard"></i> Quản lý lớp học
+                    <a href="@Url.Action("Teachers")" class="admin-action-btn btn-success-gradient">
+                        <i class="fas fa-chalkboard-teacher"></i> Quản lý giảng viên
                     </a>
-                    <a href="@Url.Action("Exams")" class="btn btn-info">
-                        <i class="fas fa-file-alt"></i> Xem tất cả bài kiểm tra
-                    </a>
-                    <a href="@Url.Action("StudentGrades")" class="btn btn-danger">
+                    <a href="@Url.Action("StudentGrades")" class="admin-action-btn btn-warning-gradient">
                         <i class="fas fa-star"></i> Quản lý điểm số
+                    </a>
+                    <a href="@Url.Action("Exams")" class="admin-action-btn btn-info-gradient">
+                        <i class="fas fa-file-alt"></i> Xem tất cả bài kiểm tra
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+// Enhanced Admin Dashboard Interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize animations
+    initializeAnimations();
+
+    // Add hover effects to stat cards
+    addStatCardEffects();
+
+    // Add click analytics
+    addClickAnalytics();
+
+    // Initialize tooltips
+    initializeTooltips();
+});
+
+function initializeAnimations() {
+    // Stagger animation for stat cards
+    const statCards = document.querySelectorAll('.stat-card-modern');
+    statCards.forEach((card, index) => {
+        card.style.animationDelay = (index * 0.15) + 's';
+        card.classList.add('animate-fade-in');
+
+        // Add intersection observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        observer.observe(card);
+    });
+
+    // Action cards animation
+    const actionCards = document.querySelectorAll('.admin-action-card');
+    actionCards.forEach((card, index) => {
+        card.style.animationDelay = (index * 0.2 + 0.8) + 's';
+    });
+}
+
+function addStatCardEffects() {
+    const statCards = document.querySelectorAll('.stat-card-modern');
+
+    statCards.forEach(card => {
+        // Add enhanced hover effects
+        card.addEventListener('mouseenter', function() {
+            const iconBg = this.querySelector('.stat-icon-bg');
+            const number = this.querySelector('.stat-number');
+            const footer = this.querySelector('.stat-card-footer');
+
+            // Icon animation
+            if (iconBg) {
+                iconBg.style.transform = 'scale(1.1) rotate(10deg)';
+                iconBg.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            }
+
+            // Number animation
+            if (number) {
+                number.style.transform = 'scale(1.05)';
+                number.style.transition = 'all 0.3s ease';
+            }
+
+            // Footer animation
+            if (footer) {
+                footer.style.transform = 'translateY(-2px)';
+                footer.style.transition = 'all 0.3s ease';
+            }
+        });
+
+        card.addEventListener('mouseleave', function() {
+            const iconBg = this.querySelector('.stat-icon-bg');
+            const number = this.querySelector('.stat-number');
+            const footer = this.querySelector('.stat-card-footer');
+
+            if (iconBg) {
+                iconBg.style.transform = 'scale(1) rotate(0deg)';
+            }
+
+            if (number) {
+                number.style.transform = 'scale(1)';
+            }
+
+            if (footer) {
+                footer.style.transform = 'translateY(0)';
+            }
+        });
+
+        // Add click effect
+        card.addEventListener('click', function(e) {
+            // Create ripple effect
+            const ripple = document.createElement('div');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('card-ripple');
+
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+}
+
+function addClickAnalytics() {
+    // Track clicks on action buttons
+    const actionButtons = document.querySelectorAll('.admin-action-btn');
+
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Add ripple effect
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('ripple');
+
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+}
+
+function initializeTooltips() {
+    // Add tooltips to stat cards
+    const statCards = document.querySelectorAll('.stat-card-modern');
+
+    statCards.forEach(card => {
+        const label = card.querySelector('.stat-label').textContent;
+        const number = card.querySelector('.stat-number').textContent;
+        const description = card.querySelector('.stat-description').textContent;
+
+        card.setAttribute('title', `${label}: ${number} - ${description}`);
+        card.setAttribute('data-bs-toggle', 'tooltip');
+        card.setAttribute('data-bs-placement', 'top');
+    });
+
+    // Initialize Bootstrap tooltips if available
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+}
+
+// Add CSS for enhanced effects
+const style = document.createElement('style');
+style.textContent = `
+    .admin-action-btn {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card-modern {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+
+    .card-ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0);
+        animation: card-ripple-animation 0.8s ease-out;
+        pointer-events: none;
+    }
+
+    @@keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    @@keyframes card-ripple-animation {
+        to {
+            transform: scale(3);
+            opacity: 0;
+        }
+    }
+
+    .stat-card-modern:hover .stat-icon-bg {
+        animation: icon-pulse 2s infinite;
+    }
+
+    @@keyframes icon-pulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+        }
+        50% {
+            box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+}
+</div> <!-- End admin-page-container -->

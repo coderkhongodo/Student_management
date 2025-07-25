@@ -1,0 +1,381 @@
+/* ===================================
+   MICRO-INTERACTIONS & FINAL POLISH
+   =================================== */
+
+/* Smooth transitions for all interactive elements */
+* {
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, 
+                box-shadow 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Enhanced button interactions */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0); /* Hardware acceleration */
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+    pointer-events: none;
+}
+
+.btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+    transition: transform 0.1s ease;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-clickable {
+    cursor: pointer;
+}
+
+.card-clickable:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced exam cards */
+.exam-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.exam-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.exam-card-header {
+    position: relative;
+    overflow: hidden;
+}
+
+.exam-card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.exam-card:hover .exam-card-header::before {
+    left: 100%;
+}
+
+/* Form interactions */
+.form-control:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 0.2rem rgba(127, 205, 205, 0.25);
+}
+
+.form-control-modern:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(127, 205, 205, 0.1);
+}
+
+/* Input group enhancements */
+.input-group:focus-within {
+    transform: scale(1.01);
+}
+
+/* Table row interactions */
+.table tbody tr {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(127, 205, 205, 0.05);
+    transform: scale(1.01);
+}
+
+/* Navigation enhancements */
+.nav-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+/* Dropdown animations */
+.dropdown-menu {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-item {
+    transition: background-color 0.2s ease, padding-left 0.2s ease;
+}
+
+.dropdown-item:hover {
+    padding-left: 1.5rem;
+}
+
+/* Modal animations */
+.modal.fade .modal-dialog {
+    transform: scale(0.8) translateY(-50px);
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+}
+
+/* Alert animations */
+.alert {
+    animation: slideInDown 0.5s ease;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Loading states */
+.btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Progress indicators */
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+.progress-bar-animated {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 1rem 1rem;
+    animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+    0% { background-position: 1rem 0; }
+    100% { background-position: 0 0; }
+}
+
+/* Skeleton loading */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Notification animations */
+.notification {
+    animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Badge animations */
+.badge {
+    transition: transform 0.2s ease;
+}
+
+.badge:hover {
+    transform: scale(1.1);
+}
+
+/* Icon animations */
+.icon-spin {
+    animation: spin 2s linear infinite;
+}
+
+.icon-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Tooltip enhancements */
+.tooltip {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tooltip.show {
+    opacity: 1;
+}
+
+/* Focus enhancements */
+.focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(127, 205, 205, 0.3);
+}
+
+/* Scroll animations */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger animations */
+.stagger-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: staggerIn 0.6s ease forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-item:nth-child(4) { animation-delay: 0.4s; }
+.stagger-item:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes staggerIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Success/Error state animations */
+.success-animation {
+    animation: successPulse 0.6s ease;
+}
+
+.error-animation {
+    animation: errorShake 0.6s ease;
+}
+
+@keyframes successPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .btn:hover,
+    .card:hover,
+    .exam-card:hover {
+        transform: none;
+    }
+}
+
+/* High performance mode */
+.performance-mode * {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Dark mode preparations */
+@media (prefers-color-scheme: dark) {
+    .skeleton {
+        background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    }
+}

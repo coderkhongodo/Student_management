@@ -1,0 +1,193 @@
+@model IEnumerable<StudentManagementSystem.Models.ExamSchedule>
+@{
+    ViewData["Title"] = "Bài thi có sẵn";
+}
+
+@section Styles {
+    <link href="~/css/admin-ui.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+}
+
+<!-- Welcome Header with Animation -->
+<div class="welcome-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="position-relative z-index-2">
+            <h2 class="mb-2 animate__animated animate__fadeInLeft fw-bold">
+                <i class="fas fa-file-alt me-2"></i>
+                Bài thi có sẵn 📝
+            </h2>
+            <p class="mb-0 opacity-75">Danh sách các bài thi bạn có thể tham gia</p>
+        </div>
+        <div class="text-end position-relative z-index-2">
+            <a href="@Url.Action("Index")" class="btn btn-light btn-lg px-4 py-2 rounded-pill shadow-sm">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-action-card animate__animated animate__fadeInUp">
+    <div class="card-header">
+        <h5 class="mb-0 fw-bold">
+            <i class="fas fa-list me-2"></i> Danh sách bài thi
+        </h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var examSchedule in Model)
+                {
+                    var now = DateTime.Now;
+                    var isAvailable = now >= examSchedule.StartTime && now <= examSchedule.EndTime && examSchedule.IsActive;
+                    var hasStarted = now >= examSchedule.StartTime;
+                    var hasEnded = now > examSchedule.EndTime;
+                    var hasSubmitted = examSchedule.Submissions.Any();
+                    
+                    <div class="col-md-6 col-lg-4">
+                        <div class="exam-card animate__animated animate__fadeIn" style="animation-delay: @(Model.ToList().IndexOf(examSchedule) * 0.1)s;">
+                            @{
+                                var statusClass = hasSubmitted ? "submitted" : isAvailable ? "available" : hasEnded ? "ended" : "upcoming";
+                                var statusText = hasSubmitted ? "Đã nộp" : isAvailable ? "Có thể thi" : hasEnded ? "Đã kết thúc" : "Sắp diễn ra";
+                                var statusIcon = hasSubmitted ? "fas fa-check-circle" : isAvailable ? "fas fa-play-circle" : hasEnded ? "fas fa-times-circle" : "fas fa-clock";
+                                var gradientClass = hasSubmitted ? "linear-gradient(135deg, #28a745, #20c997)" : 
+                                                   isAvailable ? "linear-gradient(135deg, #007bff, #6610f2)" : 
+                                                   hasEnded ? "linear-gradient(135deg, #6c757d, #495057)" : 
+                                                   "linear-gradient(135deg, #ffc107, #fd7e14)";
+                            }
+                            
+                            <div class="exam-card-header" style="background: @gradientClass;">
+                                <div class="exam-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="exam-info">
+                                    <h5 class="exam-title">@examSchedule.Exam.Title</h5>
+                                    <div class="exam-status">
+                                        <i class="@statusIcon me-1"></i>@statusText
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="exam-card-body">
+                                <div class="class-info mb-3">
+                                    <h6 class="section-title">Lớp học</h6>
+                                    <span class="class-badge">
+                                        <i class="fas fa-users me-1"></i>@examSchedule.ClassName
+                                    </span>
+                                </div>
+                                
+                                @if (!string.IsNullOrEmpty(examSchedule.Exam.Description))
+                                {
+                                    <div class="description-section mb-3">
+                                        <h6 class="section-title">Mô tả</h6>
+                                        <p class="description-text">@examSchedule.Exam.Description</p>
+                                    </div>
+                                }
+                                
+                                <div class="exam-details mb-3">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="detail-item">
+                                                <div class="detail-value text-primary">@examSchedule.StartTime.ToString("dd/MM/yyyy")</div>
+                                                <div class="detail-label">Ngày thi</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="detail-item">
+                                                <div class="detail-value text-info">@examSchedule.DurationMinutes phút</div>
+                                                <div class="detail-label">Thời lượng</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="time-info mb-3">
+                                    <h6 class="section-title">Thời gian thi</h6>
+                                    <div class="time-display">
+                                        <i class="fas fa-clock me-1"></i>
+                                        @examSchedule.StartTime.ToString("HH:mm") - @examSchedule.EndTime.ToString("HH:mm")
+                                    </div>
+                                </div>
+                                
+                                @if (!string.IsNullOrEmpty(examSchedule.Location))
+                                {
+                                    <div class="location-info mb-3">
+                                        <h6 class="section-title">Địa điểm</h6>
+                                        <div class="location-display">
+                                            <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                                            <span>@examSchedule.Location</span>
+                                        </div>
+                                    </div>
+                                }
+                                
+                                @if (!string.IsNullOrEmpty(examSchedule.Instructions))
+                                {
+                                    <div class="instructions-section mb-3">
+                                        <h6 class="section-title">Hướng dẫn</h6>
+                                        <p class="instructions-text">@examSchedule.Instructions</p>
+                                    </div>
+                                }
+                            </div>
+                            
+                            <div class="exam-card-footer">
+                                @if (hasSubmitted)
+                                {
+                                    <div class="status-display submitted">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        <span>Bạn đã nộp bài thi này</span>
+                                    </div>
+                                    <a href="@Url.Action("MySubmissions")" class="action-btn view-btn">
+                                        <i class="fas fa-eye me-1"></i>Xem bài đã nộp
+                                    </a>
+                                }
+                                else if (isAvailable)
+                                {
+                                    <div class="status-display available">
+                                        <i class="fas fa-play-circle me-2"></i>
+                                        <span>Bài thi đang diễn ra</span>
+                                    </div>
+                                    <a href="@Url.Action("TakeExam", new { id = examSchedule.Id })" class="action-btn take-exam-btn">
+                                        <i class="fas fa-play me-1"></i>Bắt đầu thi
+                                    </a>
+                                }
+                                else if (!hasStarted)
+                                {
+                                    <div class="status-display upcoming">
+                                        <i class="fas fa-clock me-2"></i>
+                                        <span>Bài thi chưa bắt đầu</span>
+                                    </div>
+                                    <div class="countdown-timer" data-start-time="@examSchedule.StartTime.ToString("yyyy-MM-ddTHH:mm:ss")">
+                                        <span class="countdown-text">Bắt đầu sau: </span>
+                                        <span class="countdown-value">--:--:--</span>
+                                    </div>
+                                }
+                                else if (hasEnded)
+                                {
+                                    <div class="status-display ended">
+                                        <i class="fas fa-times-circle me-2"></i>
+                                        <span>Bài thi đã kết thúc</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div class="empty-state">
+                    <div class="empty-state-icon mb-4">
+                        <i class="fas fa-file-alt fa-4x" style="color: #a8e6cf;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Hiện tại không có bài thi nào</h4>
+                    <p class="text-muted mb-4">Hãy kiểm tra lại sau hoặc liên hệ với giảng viên để biết thêm thông tin.</p>
+                    <a href="@Url.Action("Index")" class="btn btn-primary-gradient btn-lg rounded-pill px-4">
+                        <i class="fas fa-home me-2"></i>Về Dashboard
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
