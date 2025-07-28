@@ -1,0 +1,111 @@
+@startuml Teacher_CreateExam_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **Teacher Create Exam**
+
+|#a8e6cf|**View Layer**|
+start
+:Teacher navigates to\nExams management page;
+:Teacher clicks "Create New Exam"\nbutton;
+
+|#7fcdcd|**Controller Layer**|
+:TeacherController.CreateExam()\nGET request;
+:Get current teacher user\nfor authorization;
+:Load teacher's subjects\nfor dropdown;
+
+|#81c784|**Model Layer**|
+:Query teacher's subjects\nSubjects.Where(TeacherUserId);
+:Filter active subjects\nIsActive = true;
+:Prepare subjects list\nfor ViewBag;
+
+|#7fcdcd|**Controller Layer**|
+:Receive subjects data\nfrom Model layer;
+:Create empty CreateExamViewModel;
+:Pass data to View;
+
+|#a8e6cf|**View Layer**|
+:Display CreateExam form\n(CreateExam.cshtml);
+:Show input fields\nTitle, Description, Subject;
+:Display subject selection dropdown;
+:Show file upload for exam content;
+:Teacher fills exam information\nand uploads exam file;
+:Teacher submits form\nPOST request;
+
+|#7fcdcd|**Controller Layer**|
+:TeacherController.CreateExam()\nPOST with CreateExamViewModel;
+:Validate model state\nand form data;
+
+if (ModelState.IsValid?) then (yes)
+  :Process exam creation;
+else (no)
+  :Reload subjects for dropdown;
+  :Return form with\nvalidation errors;
+  |#a8e6cf|**View Layer**|
+  :Display form with\nerror messages;
+  stop
+endif
+
+:Get current teacher user\nfor audit trail;
+:Process uploaded file\nif provided;
+
+|#81c784|**Model Layer**|
+if (File uploaded?) then (yes)
+  :Validate file type and size;
+  :Save file to uploads directory;
+  :Generate unique filename;
+  :Set FilePath and FileName;
+else (no)
+  :Set file fields as empty;
+endif
+
+:Create Exam entity\nwith form data;
+:Set Title, Description, SubjectId;
+:Set CreatedByUserId\nfor audit trail;
+:Set timestamps\nCreatedAt, UpdatedAt;
+:Save exam to database\nSaveChangesAsync();
+
+if (Database save successful?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Set success message\n"Exam created successfully";
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Set error message\n"Failed to create exam";
+  :Reload subjects for dropdown;
+  |#a8e6cf|**View Layer**|
+  :Display form with\nerror message;
+  stop
+endif
+
+|#a8e6cf|**View Layer**|
+:Display success notification\nRedirect to Exams list;
+:Show new exam\nin Exams management page;
+stop
+
+@enduml

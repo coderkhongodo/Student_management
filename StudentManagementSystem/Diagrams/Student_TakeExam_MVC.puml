@@ -1,0 +1,138 @@
+@startuml Student_TakeExam_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **Student Take Exam**
+
+|#a8e6cf|**View Layer**|
+start
+:Student views Available Exams\n(AvailableExams.cshtml);
+:Student clicks "Take Exam"\nfor specific exam;
+
+|#7fcdcd|**Controller Layer**|
+:StudentController.TakeExam()\nGET request with exam schedule ID;
+:Get current student user\nfor authorization;
+:Extract exam schedule ID;
+
+|#81c784|**Model Layer**|
+:Load exam schedule data\nExamSchedules.Include();
+:Include exam details\nand existing submissions;
+:Check for existing submission\nby current student;
+
+if (Exam schedule exists?) then (yes)
+  :Load exam information;
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Return NotFound() response;
+  |#a8e6cf|**View Layer**|
+  :Display "Exam not found"\nerror page;
+  stop
+endif
+
+if (Student already submitted?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Set warning message\n"Already submitted";
+  |#a8e6cf|**View Layer**|
+  :Display warning\nRedirect to Available Exams;
+  stop
+else (no)
+endif
+
+:Check exam timing\nStartTime and EndTime;
+
+if (Exam currently active?) then (yes)
+  :Prepare exam data\nfor student;
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Set error message\n"Exam not available";
+  |#a8e6cf|**View Layer**|
+  :Display timing error\nRedirect to Available Exams;
+  stop
+endif
+
+|#7fcdcd|**Controller Layer**|
+:Create TakeExamViewModel\nwith exam details;
+:Set exam timing information;
+
+|#a8e6cf|**View Layer**|
+:Display TakeExam page\n(TakeExam.cshtml);
+:Show exam instructions\nand timing information;
+:Display exam file download\nif available;
+:Show file upload area\nfor submission;
+:Student downloads exam\nand prepares answers;
+:Student uploads answer file\nand submits;
+
+|#7fcdcd|**Controller Layer**|
+:StudentController.SubmitExam()\nPOST with TakeExamViewModel;
+:Validate model state\nand submission;
+
+if (ModelState.IsValid?) then (yes)
+  :Process exam submission;
+else (no)
+  :Return form with\nvalidation errors;
+  |#a8e6cf|**View Layer**|
+  :Display form with\nerror messages;
+  stop
+endif
+
+:Verify exam timing\nstill valid;
+:Check for duplicate submission;
+
+|#81c784|**Model Layer**|
+if (Submission file provided?) then (yes)
+  :Validate file type and size;
+  :Save file to uploads directory;
+  :Generate unique filename;
+else (no)
+  :Set file fields as empty;
+endif
+
+:Create Submission entity\nwith student data;
+:Set ExamScheduleId, StudentUserId;
+:Set file information\nif uploaded;
+:Set submission timestamp\nSubmittedAt;
+:Save submission to database\nSaveChangesAsync();
+
+if (Database save successful?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Set success message\n"Exam submitted successfully";
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Set error message\n"Failed to submit exam";
+  |#a8e6cf|**View Layer**|
+  :Display submission error;
+  stop
+endif
+
+|#a8e6cf|**View Layer**|
+:Display success notification\nRedirect to My Submissions;
+:Show submitted exam\nin submissions list;
+stop
+
+@enduml

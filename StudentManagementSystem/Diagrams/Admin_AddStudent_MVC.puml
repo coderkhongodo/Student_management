@@ -1,0 +1,109 @@
+@startuml Admin_AddStudent_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **Admin Add Student**
+
+|#a8e6cf|**View Layer**|
+start
+:Admin navigates to\nStudents management page;
+:Admin clicks "Add New Student"\nbutton;
+
+|#7fcdcd|**Controller Layer**|
+:AdminController.CreateStudent()\nGET request;
+:Load available classes\nfor dropdown selection;
+
+|#81c784|**Model Layer**|
+:Query active classes\nClasses.Where(c => c.IsActive);
+:Include class subjects\nfor display;
+:Prepare class list\nfor ViewBag;
+
+|#7fcdcd|**Controller Layer**|
+:Receive class data\nfrom Model layer;
+:Create empty CreateStudentViewModel;
+:Pass data to View;
+
+|#a8e6cf|**View Layer**|
+:Display CreateStudent form\n(CreateStudent.cshtml);
+:Show input fields\nFirstName, LastName, Email, etc.;
+:Display class selection dropdown;
+:Admin fills student information\nand selects optional class;
+:Admin submits form\nPOST request;
+
+|#7fcdcd|**Controller Layer**|
+:AdminController.CreateStudent()\nPOST with CreateStudentViewModel;
+:Validate model state\nand form data;
+
+if (ModelState.IsValid?) then (yes)
+  :Process student creation;
+else (no)
+  :Reload classes for dropdown;
+  :Return form with\nvalidation errors;
+  |#a8e6cf|**View Layer**|
+  :Display form with\nerror messages;
+  stop
+endif
+
+:Get current admin user\nfor audit trail;
+:Pass student data to Model;
+
+|#81c784|**Model Layer**|
+:Create ApplicationUser entity\nwith student data;
+:Set user properties\nUserName, Email, FirstName, etc.;
+:Create user account\nUserManager.CreateAsync();
+
+if (User creation successful?) then (yes)
+  :Assign Student role\nAddToRoleAsync();
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Collect creation errors;
+  :Add to ModelState;
+  :Reload classes for dropdown;
+  |#a8e6cf|**View Layer**|
+  :Display form with\ncreation errors;
+  stop
+endif
+
+if (Class selected?) then (yes)
+  :Create ClassStudent entity\nwith class assignment;
+  :Set CreatedByUserId\nfor audit trail;
+  :Save class assignment\nSaveChangesAsync();
+else (no)
+  :Skip class assignment;
+endif
+
+|#7fcdcd|**Controller Layer**|
+:Set success message\n"Student created successfully";
+
+|#a8e6cf|**View Layer**|
+:Display success notification\nRedirect to Students list;
+:Show new student\nin Students management page;
+stop
+
+@enduml

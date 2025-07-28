@@ -1,0 +1,103 @@
+@startuml Student_ViewGrades_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **Student View Grades**
+
+|#a8e6cf|**View Layer**|
+start
+:Student navigates to\nMy Grades section;
+:Student clicks on\n"View My Grades" link;
+
+|#7fcdcd|**Controller Layer**|
+:StudentController.MyGrades()\nGET request;
+:Authenticate current user\nGetUserAsync();
+:Validate student role\nand permissions;
+
+if (Valid student user?) then (yes)
+  :Pass request to Model layer;
+else (no)
+  :Redirect to login\nor unauthorized page;
+  |#a8e6cf|**View Layer**|
+  :Display login form\nor error page;
+  stop
+endif
+
+|#81c784|**Model Layer**|
+:Get current semester and year\nGradeCalculationService;
+:Load enrolled subjects\nClassStudents.Include();
+:Query student grades\nStudentGrades.Where();
+
+:Process each enrolled subject;
+:Calculate attendance score\n(10% weight);
+:Calculate midterm score\n(30% weight);
+:Calculate final score\n(60% weight);
+:Compute total score\nusing 1:3:6 ratio;
+
+:Determine letter grade\nA+, A, B+, B, C+, C, D+, D, F;
+:Calculate grade points\nfor GPA computation;
+:Generate grade description\nXuất sắc, Giỏi, Khá, etc.;
+
+:Create StudentGradeViewModel\nfor each subject;
+:Calculate overall GPA\nfrom all subjects;
+:Count total and completed\nsubjects;
+
+:Prepare StudentGradesOverviewViewModel\nwith all grade data;
+
+|#7fcdcd|**Controller Layer**|
+:Receive processed grade data\nfrom Model layer;
+:Validate data completeness\nand accuracy;
+:Prepare view model\nfor presentation;
+
+|#a8e6cf|**View Layer**|
+:Display MyGrades.cshtml\nwith grade overview;
+:Show student information\nName, ID, Semester, Year;
+:Display grades by subject\nwith visual indicators;
+
+:Render grade cards\nfor each subject;
+:Show attendance score\nwith 10% weight indicator;
+:Show midterm score\nwith 30% weight indicator;
+:Show final score\nwith 60% weight indicator;
+:Display calculated total score\nand letter grade;
+
+:Show overall statistics\nGPA, Total Credits, Progress;
+:Display grade distribution\nwith color-coded badges;
+:Show academic status\nPassed/Failed subjects;
+
+if (Student has grades?) then (yes)
+  :Display comprehensive\ngrade report;
+else (no)
+  :Display "No grades available"\nmessage;
+endif
+
+:Provide grade filtering\nby semester/year;
+:Enable grade export\nto PDF or Excel;
+stop
+
+@enduml

@@ -1,0 +1,98 @@
+@startuml System_CalculateGPA_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **System Calculate GPA**
+
+|#a8e6cf|**View Layer**|
+start
+:Student requests grade view\nor system triggers calculation;
+:Grade calculation needed\nfor display or reporting;
+
+|#7fcdcd|**Controller Layer**|
+:StudentController.MyGrades()\nor background service trigger;
+:Get current student user\nfor calculation;
+:Request GPA calculation\nfrom service;
+
+|#81c784|**Model Layer**|
+:GradeCalculationService\nUpdateStudentGradeAsync();
+:Get current semester and year\nGetCurrentSemesterAndYear();
+:Load student's enrolled subjects\nClassStudents.Include();
+
+:Process each subject\nfor grade calculation;
+:Calculate attendance score\n(10% weight);
+
+:Query attendance sessions\nfor student's classes;
+:Count total sessions\nfor the year;
+:Count attended sessions\nwhere IsPresent = true;
+:Calculate attendance percentage\nand convert to 10-point scale;
+
+:Calculate midterm score\n(30% weight);
+:Query exam submissions\nfor midterm exams;
+:Get grades from submissions\nwhere exam type is midterm;
+:Average midterm scores\nfor the subject;
+
+:Calculate final score\n(60% weight);
+:Query exam submissions\nfor final exams;
+:Get grades from submissions\nwhere exam type is final;
+:Average final scores\nfor the subject;
+
+:Compute total score\nusing 1:3:6 ratio;
+:TotalScore = (Attendance * 0.1)\n+ (Midterm * 0.3) + (Final * 0.6);
+
+:Determine letter grade\nfrom total score;
+:Calculate grade points\nfor GPA computation;
+:A+ = 4.0, A = 3.7, B+ = 3.3, etc.;
+
+:Update or create\nStudentGrade record;
+:Set calculated scores\nand timestamps;
+:Save grade to database\nSaveChangesAsync();
+
+:Calculate overall GPA\nfor all subjects;
+:Sum (GradePoints * Credits)\nfor all completed subjects;
+:Divide by total credits\nto get GPA;
+
+:Determine academic status\nfrom GPA and failed subjects;
+:Check for academic warning\nif GPA < 2.0;
+:Count failed subjects\nwhere TotalScore < 4.0;
+
+|#7fcdcd|**Controller Layer**|
+:Receive calculated GPA\nand grade data;
+:Prepare StudentGradesOverviewViewModel\nwith all calculated information;
+:Set OverallGPA, TotalCredits\nCompletedSubjects, etc.;
+
+|#a8e6cf|**View Layer**|
+:Display calculated grades\nin MyGrades view;
+:Show individual subject scores\nwith breakdown;
+:Display overall GPA\nand academic status;
+:Show grade distribution\nand progress indicators;
+:Render grade cards\nwith color-coded status;
+stop
+
+@enduml

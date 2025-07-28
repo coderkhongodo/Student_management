@@ -1,0 +1,126 @@
+@startuml Admin_DeleteStudent_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **Admin Delete Student**
+
+|#a8e6cf|**View Layer**|
+start
+:Admin views Students list\n(Students.cshtml);
+:Admin clicks Delete button\nfor specific student;
+:Confirmation modal displays\nwith warning message;
+
+if (Admin confirms deletion?) then (yes)
+  :Submit DELETE request\nwith student ID;
+else (no)
+  :Cancel operation;
+  stop
+endif
+
+|#7fcdcd|**Controller Layer**|
+:AdminController.DeleteStudent()\nreceives POST request;
+:Validate request parameters\nand user authorization;
+:Extract student ID from request;
+
+if (Valid request?) then (yes)
+  :Pass request to Model layer;
+else (no)
+  :Set error message\n"Invalid request";
+  |#a8e6cf|**View Layer**|
+  :Display error notification\nRedirect to Students list;
+  stop
+endif
+
+|#81c784|**Model Layer**|
+:UserManager.FindByIdAsync()\nlocate student record;
+
+if (Student exists?) then (yes)
+  :Load student data\nfor validation;
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Return error response\n"Student not found";
+  |#a8e6cf|**View Layer**|
+  :Display error message\nRedirect to Students list;
+  stop
+endif
+
+:Check business rules\nSubmissions.AnyAsync();
+
+if (Has submissions?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Return validation error\n"Cannot delete student with submissions";
+  |#a8e6cf|**View Layer**|
+  :Display error notification\nRedirect to Students list;
+  stop
+else (no)
+endif
+
+:Check student grades\nStudentGrades.AnyAsync();
+
+if (Has grades?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Return validation error\n"Cannot delete student with grades";
+  |#a8e6cf|**View Layer**|
+  :Display error notification\nRedirect to Students list;
+  stop
+else (no)
+endif
+
+:Check attendance records\nAttendances.AnyAsync();
+
+if (Has attendance?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Return validation error\n"Cannot delete student with attendance";
+  |#a8e6cf|**View Layer**|
+  :Display error notification\nRedirect to Students list;
+  stop
+else (no)
+endif
+
+:Begin database transaction;
+:Remove class assignments\nClassStudents.RemoveRange();
+:Delete student record\nUsers.Remove();
+:Save changes to database\nSaveChangesAsync();
+
+if (Database operation successful?) then (yes)
+  :Commit transaction;
+  |#7fcdcd|**Controller Layer**|
+  :Set success message\n"Student deleted successfully";
+else (no)
+  :Rollback transaction;
+  |#7fcdcd|**Controller Layer**|
+  :Set error message\n"Database error occurred";
+endif
+
+|#a8e6cf|**View Layer**|
+:Display result notification\nRedirect to Students list;
+:Update Students list view\nremove deleted student;
+stop
+
+@enduml

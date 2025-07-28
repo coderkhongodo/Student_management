@@ -1,0 +1,123 @@
+@startuml Teacher_GradeStudent_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **Teacher Grade Student**
+
+|#a8e6cf|**View Layer**|
+start
+:Teacher views Grading page\n(Grading.cshtml);
+:Teacher selects submission\nto grade;
+:Teacher clicks Grade button\nfor specific submission;
+
+|#7fcdcd|**Controller Layer**|
+:TeacherController.GradeSubmission()\nGET request with submission ID;
+:Validate teacher authorization\nfor this submission;
+:Extract submission ID from request;
+
+if (Valid request and authorized?) then (yes)
+  :Pass request to Model layer;
+else (no)
+  :Return Forbid() or NotFound();
+  |#a8e6cf|**View Layer**|
+  :Display error page\nor redirect to Grading;
+  stop
+endif
+
+|#81c784|**Model Layer**|
+:Load submission data\nSubmissions.Include();
+:Load related exam schedule\nand student information;
+
+if (Submission exists?) then (yes)
+  :Prepare grading form data\nGradeSubmissionViewModel;
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Return NotFound() response;
+  |#a8e6cf|**View Layer**|
+  :Display "Submission not found"\nerror page;
+  stop
+endif
+
+|#a8e6cf|**View Layer**|
+:Display GradeSubmission form\nwith submission details;
+:Teacher enters score\nand comments;
+:Teacher submits grading form\nPOST request;
+
+|#7fcdcd|**Controller Layer**|
+:TeacherController.GradeSubmission()\nPOST with GradeSubmissionViewModel;
+:Validate model state\nand form data;
+
+if (ModelState.IsValid?) then (yes)
+  :Process grading request;
+else (no)
+  :Return form with\nvalidation errors;
+  |#a8e6cf|**View Layer**|
+  :Display form with\nerror messages;
+  stop
+endif
+
+:Verify teacher authorization\nfor this submission;
+
+if (Authorized?) then (yes)
+  :Pass grading data to Model;
+else (no)
+  :Return Forbid() response;
+  |#a8e6cf|**View Layer**|
+  :Display authorization error;
+  stop
+endif
+
+|#81c784|**Model Layer**|
+:Load submission record\nwith existing grade;
+
+if (Grade already exists?) then (yes)
+  :Update existing grade\nScore, Comments, GradedAt;
+else (no)
+  :Create new Grade entity\nwith submission data;
+endif
+
+:Validate score range\n(0-10 scale);
+:Calculate letter grade\nfrom numeric score;
+:Set graded by user ID\nand timestamp;
+:Save grade to database\nSaveChangesAsync();
+
+if (Database save successful?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Set success message\n"Grade saved successfully";
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Set error message\n"Failed to save grade";
+endif
+
+|#a8e6cf|**View Layer**|
+:Display result notification\nRedirect to Grading page;
+:Update grading list\nshow new grade status;
+stop
+
+@enduml

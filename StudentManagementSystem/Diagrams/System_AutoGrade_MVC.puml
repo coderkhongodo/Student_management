@@ -1,0 +1,110 @@
+@startuml System_AutoGrade_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **System Auto Grade**
+
+|#a8e6cf|**View Layer**|
+start
+:System timer triggers\nbackground service;
+:Teacher manually triggers\nProcessExpiredExam action;
+
+|#7fcdcd|**Controller Layer**|
+:TeacherController.ProcessExpiredExam()\nPOST request with exam schedule ID;
+:Validate teacher authorization\nfor this exam;
+:Extract exam schedule ID;
+
+if (Valid request and authorized?) then (yes)
+  :Pass request to Model layer;
+else (no)
+  :Return NotFound() or Forbid();
+  |#a8e6cf|**View Layer**|
+  :Display error message\nRedirect to Grading;
+  stop
+endif
+
+|#81c784|**Model Layer**|
+:Load exam schedule data\nExamSchedules.Include();
+:Include class students\nand existing submissions;
+:Check exam timing\nand processing status;
+
+if (Exam has ended?) then (yes)
+  :Proceed with auto grading;
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Set error message\n"Exam not yet ended";
+  |#a8e6cf|**View Layer**|
+  :Display timing error\nRedirect to Grading;
+  stop
+endif
+
+if (Already processed?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Set warning message\n"Already processed";
+  |#a8e6cf|**View Layer**|
+  :Display warning\nRedirect to Grading;
+  stop
+else (no)
+endif
+
+:Get all students in class\nClassStudents list;
+:Get students who submitted\nSubmissions list;
+:Find missing students\nExcept operation;
+
+:Process each missing student;
+:Create empty Submission\nwith zero score;
+:Set submission details\nExamScheduleId, StudentUserId;
+:Set auto-generated flag\nand timestamp;
+:Save submission to database\nSaveChangesAsync();
+
+:Create Grade entity\nwith zero score;
+:Set Score = 0, MaxScore = 10;
+:Set LetterGrade = "F";
+:Set auto-grading comment\n"Did not participate";
+:Set GradedByUserId\nto exam creator;
+:Set grading timestamp\nGradedAt;
+:Save grade to database\nSaveChangesAsync();
+
+:Mark exam as processed\nAutoGradingProcessed = true;
+:Save processing status\nSaveChangesAsync();
+
+if (All operations successful?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Set success message\nwith processed count;
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Set error message\n"Processing failed";
+endif
+
+|#a8e6cf|**View Layer**|
+:Display result notification\nRedirect to Grading page;
+:Update grading list\nshow auto-graded submissions;
+stop
+
+@enduml

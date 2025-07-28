@@ -6,6 +6,76 @@
 @section Styles {
     <link href="~/css/admin-ui.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+    <style>
+        /* Beautiful close button - Override Bootstrap */
+        .btn-close,
+        .btn-close-white,
+        .modal-header .btn-close {
+            z-index: 1052 !important;
+            position: relative !important;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+            border: 2px solid white !important;
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            opacity: 1 !important;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background-image: none !important;
+        }
+
+        .btn-close::before,
+        .btn-close-white::before,
+        .modal-header .btn-close::before {
+            content: "✕" !important;
+            color: white !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            line-height: 1 !important;
+        }
+
+        /* Hover effect for close button */
+        .btn-close:hover,
+        .btn-close-white:hover,
+        .modal-header .btn-close:hover {
+            background: linear-gradient(135deg, #ff5252, #d32f2f) !important;
+            transform: scale(1.1) rotate(90deg) !important;
+            box-shadow: 0 6px 20px rgba(255, 82, 82, 0.4) !important;
+        }
+
+        /* Active effect */
+        .btn-close:active,
+        .btn-close-white:active,
+        .modal-header .btn-close:active {
+            transform: scale(0.95) !important;
+        }
+
+        /* Beautiful modal header */
+        .modal-header {
+            background: linear-gradient(135deg, #a8e6cf, #7fcdcd) !important;
+            border-bottom: none !important;
+            padding: 20px 25px !important;
+            border-radius: 15px 15px 0 0 !important;
+            position: relative !important;
+        }
+
+        .modal-title {
+            color: #2d5a27 !important;
+            font-weight: 600 !important;
+            font-size: 1.25rem !important;
+        }
+
+        /* Modal content styling */
+        .modal-content {
+            border: none !important;
+            border-radius: 15px !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+            overflow: hidden !important;
+        }
+    </style>
 }
 
 <div class="admin-page-container">
@@ -433,6 +503,54 @@
             });
         });
     }
+
+    // Add force close modal function
+    window.forceCloseModal = function() {
+        console.log('Force closing all modals...');
+
+        // Method 1: Bootstrap way
+        const openModals = document.querySelectorAll('.modal.show');
+        openModals.forEach(modal => {
+            const modalInstance = bootstrap.Modal.getInstance(modal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+        });
+
+        // Method 2: Remove all backdrops
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+
+        // Method 3: Force restore body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+
+        console.log('All modals force closed');
+    };
+
+    // Add click outside and double-click handlers
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal') || e.target.classList.contains('modal-backdrop')) {
+            console.log('Clicked outside modal, closing...');
+            const modalInstance = bootstrap.Modal.getInstance(e.target);
+            if (modalInstance) {
+                modalInstance.hide();
+            } else {
+                forceCloseModal();
+            }
+        }
+    });
+
+    document.addEventListener('dblclick', function(e) {
+        const openModals = document.querySelectorAll('.modal.show');
+        if (openModals.length > 0) {
+            console.log('Double-click detected, force closing modals...');
+            forceCloseModal();
+        }
+    });
 
     function handleModalEvents() {
         // Detail modals

@@ -4,7 +4,6 @@ using StudentManagementSystem.Data;
 using StudentManagementSystem.Models;
 using StudentManagementSystem.Services;
 using StudentManagementSystem.Constants;
-using StudentManagementSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

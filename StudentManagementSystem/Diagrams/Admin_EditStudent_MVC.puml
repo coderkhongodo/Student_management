@@ -1,0 +1,114 @@
+@startuml Admin_EditStudent_MVC
+!theme plain
+
+skinparam backgroundColor white
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 10
+
+skinparam activity {
+    BackgroundColor white
+    BorderColor #7fcdcd
+    FontColor black
+    FontSize 10
+}
+
+skinparam activityStart {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityEnd {
+    BackgroundColor #81c784
+    BorderColor #7fcdcd
+}
+
+skinparam activityDiamond {
+    BackgroundColor #7fcdcd
+    BorderColor #81c784
+    FontColor black
+}
+
+title **Admin Edit Student**
+
+|#a8e6cf|**View Layer**|
+start
+:Admin views Students list\n(Students.cshtml);
+:Admin clicks Edit button\nfor specific student;
+
+|#7fcdcd|**Controller Layer**|
+:AdminController.EditStudent()\nGET request with student ID;
+:Extract student ID\nfrom request parameters;
+:Pass ID to Model layer;
+
+|#81c784|**Model Layer**|
+:Load student data\nUserManager.FindByIdAsync();
+
+if (Student exists?) then (yes)
+  :Retrieve student information\nId, Email, FirstName, etc.;
+  :Prepare EditUserViewModel\nwith current data;
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Return NotFound() response;
+  |#a8e6cf|**View Layer**|
+  :Display "Student not found"\nerror page;
+  stop
+endif
+
+|#7fcdcd|**Controller Layer**|
+:Receive student data\nfrom Model layer;
+:Create pre-populated\nEditUserViewModel;
+
+|#a8e6cf|**View Layer**|
+:Display EditStudent form\n(EditStudent.cshtml);
+:Show pre-filled input fields\nFirstName, LastName, etc.;
+:Admin modifies student data\nas needed;
+:Admin submits updated form\nPOST request;
+
+|#7fcdcd|**Controller Layer**|
+:AdminController.EditStudent()\nPOST with EditUserViewModel;
+:Validate model state\nand form data;
+
+if (ModelState.IsValid?) then (yes)
+  :Process update request;
+else (no)
+  :Return form with\nvalidation errors;
+  |#a8e6cf|**View Layer**|
+  :Display form with\nerror messages;
+  stop
+endif
+
+:Pass updated data to Model;
+
+|#81c784|**Model Layer**|
+:Load existing student\nUserManager.FindByIdAsync();
+
+if (Student still exists?) then (yes)
+  :Update student properties\nFirstName, LastName, etc.;
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Return NotFound() response;
+  |#a8e6cf|**View Layer**|
+  :Display "Student not found"\nerror page;
+  stop
+endif
+
+:Save updated student data\nUserManager.UpdateAsync();
+
+if (Update successful?) then (yes)
+  |#7fcdcd|**Controller Layer**|
+  :Set success message\n"Student information updated";
+else (no)
+  |#7fcdcd|**Controller Layer**|
+  :Collect update errors;
+  :Add to ModelState;
+  |#a8e6cf|**View Layer**|
+  :Display form with\nupdate errors;
+  stop
+endif
+
+|#a8e6cf|**View Layer**|
+:Display success notification\nRedirect to Students list;
+:Show updated student\ninformation in list;
+stop
+
+@enduml
